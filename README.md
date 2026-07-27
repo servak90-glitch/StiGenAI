@@ -24,7 +24,23 @@
 
 **StigenAI Studio** — это мощная веб-платформа и десктоп-инструмент для иллюстраторов, дизайнеров и мейкеров. Приложение объединяет в себе **умный конструктор арт-промтов**, **профессиональный SVG-векторизатор** и **мощный ИИ-апскейлер**.
 
-Вы можете использовать студию как идеальный генератор промтов для внешней работы (Midjourney, DALL-E 3, Stable Diffusion) или **подключить собственный Google Gemini API ключ** прямо в интерфейсе и генерировать стикеры, векторы и дизайн-паки в один клик.
+Программа поддерживает два ключевых режима работы: **автономный (без API ключа)** для составления готовых промтов и векторной обработки файлов, а также **интерактивный** с подключением вашего собственного Google Gemini API ключа для генерации изображений прямо в интерфейсе.
+
+---
+
+### 💡 Как использовать в Автономном режиме (Без API ключа)
+
+Вам не обязательно подключать нейросеть, чтобы использовать программу на 100%!
+
+#### 🎯 Пошаговый сценарий работы с конструктором промтов:
+1. **Нажмите кнопку «Начать творить»** на главном экране.
+2. **Выберите стиль и настройте параметры**: укажите ваш объект, выберите художественный стиль, толщину контура, освещение, эмоции и ракурс.
+3. **Скопируйте промт**: нажмите кнопку **«Скопировать промт»** (или иконку буфера обмена в шапке).
+4. **Используйте в любой нейросети**: вставьте готовый идеальный англоязычный промт в **Midjourney**, **DALL-E 3**, **Stable Diffusion**, **Flux**, **Leonardo AI** или любую другую графическую нейросеть.
+
+#### ⚡ Локальная работа с вектором и полиграфией:
+* **SVG-векторизатор**: Загрузите любое растровое изображение (PNG/JPG), удалите фон и скомпилируйте его в чистый **SVG-вектор**.
+* **Print Master**: Компонуйте и подготавливайте полученные стикеры к печати и плоттерной резке.
 
 ---
 
@@ -44,9 +60,9 @@
    * Детализация и увеличение четкости изображений для печати и веб-дизайна.
    * Удаление шумов и артефактов с сохранением стиля.
 
-4. **🤖 Прямая генерация через Gemini API**
-   * Введите свой бесплатный API ключ из Google AI Studio на главном экране.
-   * Поддержка свежайших визуальных моделей Google (Gemini 2.5, Imagen 3, Pro/Flash).
+4. **🤖 Прямая генерация через Gemini API (Опционально)**
+   * Введите свой API ключ из Google AI Studio на главном экране.
+   * Поддержка свежайших визуальных моделей Google.
 
 5. **🎨 Дополнительные студии и инструменты:**
    * **Style Scanner & Transposer:** Сканируйте стили с любых картинок и перенос стиля на новые арт-объекты.
@@ -83,7 +99,23 @@ npm run dev
 
 **StigenAI Studio** is a feature-rich visual workbench engineered for illustrators, graphic designers, and content creators. It combines a **smart AI prompt builder**, an **industrial-grade SVG vectorizer**, and an **AI-powered upscaler**.
 
-Use it as an advanced prompt crafting workstation for external tools (Midjourney, Stable Diffusion, DALL-E) or **plug in your Google Gemini API key** right on the main screen to generate stickers, brand assets, and vectors instantly.
+It operates seamlessly in **Standalone Mode (No API key required)** as a prompt engineer & local vectorizer, or in **Integrated Mode** by connecting your Google Gemini API key for instant in-app generation.
+
+---
+
+### 💡 How to Use in Standalone / Offline Mode (No API Key Required)
+
+You do not need an API key or active AI subscription to get maximum value from StigenAI:
+
+#### 🎯 Step-by-Step Prompt Constructor Workflow:
+1. **Click "Start Creating" ("Начать творить")** on the main dashboard.
+2. **Select Style & Options**: Define your subject, choose art style presets, stroke thickness, framing, mood, and lighting.
+3. **Copy the Prompt**: Click the **"Copy Prompt"** button (or the clipboard icon in the top toolbar).
+4. **Paste into Any Image Generator**: Use your freshly minted, highly optimized prompt inside **Midjourney**, **DALL-E 3**, **Stable Diffusion**, **Flux**, or **Leonardo AI**.
+
+#### ⚡ Local Vector & Layout Tools:
+* **Raster-to-SVG Vectorizer**: Drag & drop PNG/JPG artwork, clean background, and vectorize into crisp **SVG vectors**.
+* **Print Master Studio**: Arrange stickers and graphics on print sheets for plotter cutting.
 
 ---
 
@@ -103,9 +135,9 @@ Use it as an advanced prompt crafting workstation for external tools (Midjourney
    * Enhance image resolution and sharp details ready for physical printing or high-res display.
    * Denoising and edge enhancement preserving the original art style.
 
-4. **🤖 Direct Gemini API Integration**
+4. **🤖 Direct Gemini API Integration (Optional)**
    * Simply paste your Google AI Studio API key directly into the header settings.
-   * Native support for Google's latest image models (Gemini 2.5, Imagen 3).
+   * Native support for Google's latest image models.
 
 5. **🎨 Integrated Creative Suites:**
    * **Style Scanner & Transposer:** Extract aesthetic DNA from reference images and transpose onto new subjects.
