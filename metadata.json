@@ -1,0 +1,19 @@
+{
+  "name": "StiGenAi",
+  "version": "6.7.1",
+  "codename": "Vector Precision",
+  "description": "The ultimate AI design combine. Create vector stickers, upscale photos, analyze styles, and generate typography with 100% deterministic control. Features advanced VTracer (WASM) vectorization with Safe-Mode SVGO optimization.",
+  "features": {
+    "generation": "Gemini 2.5 Flash / Gemini 3 Pro Image",
+    "client_ai": "Classic Canvas Algorithms + VTracer (WASM) / ImageTracerJS",
+    "storage": "IndexedDB History (50 items)",
+    "platform": "Progressive Web App (PWA) with Offline Support",
+    "analysis": "Gemini 3 Pro Reasoning Core",
+    "export_formats": [
+      "PNG (Transparent)",
+      "JPG (White BG)",
+      "SVG (Vector Presets)"
+    ]
+  },
+  "requestFramePermissions": []
+}

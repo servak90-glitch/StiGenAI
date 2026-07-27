@@ -1,0 +1,482 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;600;800&family=Playfair+Display:wght@400;700;900&family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+/* Reset and Body Styles */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+}
+
+body {
+    background-color: #F5F3F0;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(168, 213, 216, 0.15) 0, transparent 50%), 
+        radial-gradient(at 100% 100%, rgba(212, 197, 232, 0.15) 0, transparent 50%);
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    color: #5A5A5A;
+}
+
+#root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Custom Scrollbar (Pastel) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #E8E3DC;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #A8D5D8;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-up {
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scanner-bar {
+    0% { top: 0%; }
+    100% { top: 100%; }
+}
+.animate-scanner-bar {
+    animation: scanner-bar 2.5s ease-in-out infinite alternate;
+    position: absolute;
+    width: 100%;
+}
+
+/* --- SUN LOADER --- */
+.sun-loader {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    display: inline-block;
+}
+
+.sun-loader .box {
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(from 0deg, #FDB813, #F57F17, #FDB813);
+    -webkit-mask-mode: alpha;
+    mask-mode: alpha;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    animation: sun-spin 1.5s linear infinite;
+}
+
+@keyframes sun-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* --- MULTI CIRCLE LOADER --- */
+.multi-circle-loader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.mc-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    animation: mc-pulse 1.2s ease-in-out infinite;
+}
+
+.mc-circle:nth-child(1) {
+    background-color: #8BC6EC;
+    background-image: linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%);
+}
+
+.mc-circle:nth-child(2) {
+    animation-delay: 0.2s;
+    background-color: #4158D0;
+    background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+}
+
+.mc-circle:nth-child(3) {
+    animation-delay: 0.4s;
+    background-color: #0093E9;
+    background-image: linear-gradient(160deg, #0093E9 0%, #80D0C7 100%);
+}
+
+.mc-circle:nth-child(4) {
+    animation-delay: 0.6s;
+    background-color: #8EC5FC;
+    background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
+}
+
+.mc-circle:nth-child(5) {
+    animation-delay: 0.8s;
+    background-color: #00DBDE;
+    background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
+}
+
+@keyframes mc-pulse {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0.8);
+      opacity: 0.7;
+    }
+}
+
+/* --- PASTEL UI UTILS --- */
+.clean-card {
+    background: #FEFCFB;
+    border: 1px solid #E8E3DC;
+    border-radius: 24px;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+}
+
+.clean-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    border-color: #A8D5D8;
+}
+
+.ios-btn {
+    @apply flex items-center justify-center rounded-2xl font-bold transition-all active:scale-95 border border-transparent shadow-sm;
+}
+
+.ios-btn-primary {
+    @apply bg-slate-900 text-white hover:bg-slate-800 shadow-md;
+}
+
+.glass-panel {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+}
+
+.glass-card {
+    @apply bg-white/40 backdrop-blur-sm border border-white/30 rounded-3xl;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 rounded-full;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-300;
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* --- COSMIC TOGGLE --- */
+.cosmic-toggle {
+    position: relative;
+    width: 140px;
+    height: 70px;
+    transform-style: preserve-3d;
+    perspective: 500px;
+    display: block;
+}
+
+.cosmic-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.cosmic-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, #E8E3DC, #F5F3F0); /* Light Pastel Mode Default */
+    border-radius: 35px;
+    transition: 0.5s;
+    transform-style: preserve-3d;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05), inset 0 0 10px rgba(255, 255, 255, 0.8);
+    overflow: hidden;
+    border: 1px solid #D1D5DB;
+}
+
+.cosmic-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(1px 1px at 10% 10%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 20% 20%, #fff 100%, transparent),
+      radial-gradient(2px 2px at 30% 30%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 40% 40%, #fff 100%, transparent),
+      radial-gradient(2px 2px at 50% 50%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 60% 60%, #fff 100%, transparent),
+      radial-gradient(2px 2px at 70% 70%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 80% 80%, #fff 100%, transparent),
+      radial-gradient(1px 1px at 90% 90%, #fff 100%, transparent);
+    background-size: 200% 200%;
+    opacity: 0; /* Hidden in light mode */
+    transition: 0.5s;
+}
+
+.cosmic-orb {
+    position: absolute;
+    height: 62px;
+    width: 62px;
+    left: 4px;
+    bottom: 3px;
+    background: linear-gradient(145deg, #d1d5db, #f3f4f6);
+    border-radius: 50%;
+    transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform-style: preserve-3d;
+    z-index: 2;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.cosmic-inner {
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #fff, #e6e6e6);
+    transition: 0.5s;
+    overflow: hidden;
+}
+
+.cosmic-inner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(0, 0, 0, 0.05) 10deg,
+      transparent 20deg
+    );
+    animation: cosmicPatternRotate 10s linear infinite;
+}
+
+.cosmic-ring {
+    position: absolute;
+    inset: -3px;
+    border: 2px solid rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    transition: 0.5s;
+}
+
+/* Checked State */
+.cosmic-input:checked + .cosmic-slider {
+    background: linear-gradient(45deg, #16213e, #1a1a2e);
+    border-color: transparent;
+}
+
+.cosmic-input:checked + .cosmic-slider .cosmic-bg {
+    opacity: 0.5;
+}
+
+.cosmic-input:checked + .cosmic-slider .cosmic-orb {
+    transform: translateX(70px) rotate(360deg);
+    background: linear-gradient(145deg, #4ecdc4, #45b7af);
+    box-shadow: none;
+}
+
+.cosmic-input:checked + .cosmic-slider .cosmic-inner {
+    background: linear-gradient(145deg, #45b7af, #3da89f);
+    transform: scale(0.9);
+}
+
+.cosmic-input:checked + .cosmic-slider .cosmic-ring {
+    border-color: rgba(78, 205, 196, 0.3);
+    animation: cosmicRingPulse 2s infinite;
+}
+
+.cosmic-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(78, 205, 196, 0.5),
+      transparent
+    );
+    transform-origin: left;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.cosmic-line:nth-child(2) {
+    top: 20%;
+    transform: rotate(15deg);
+}
+.cosmic-line:nth-child(3) {
+    top: 50%;
+    transform: rotate(0deg);
+}
+.cosmic-line:nth-child(4) {
+    top: 80%;
+    transform: rotate(-15deg);
+}
+
+.cosmic-input:checked + .cosmic-slider .cosmic-line {
+    opacity: 1;
+    animation: cosmicEnergyFlow 2s linear infinite;
+}
+
+.cosmic-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.cosmic-p {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #4ecdc4;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.cosmic-input:checked + .cosmic-slider .cosmic-p {
+    animation: cosmicParticleBurst 1s ease-out infinite;
+}
+
+.cosmic-p:nth-child(1) { left: 20%; animation-delay: 0s; }
+.cosmic-p:nth-child(2) { left: 40%; animation-delay: 0.2s; }
+.cosmic-p:nth-child(3) { left: 60%; animation-delay: 0.4s; }
+.cosmic-p:nth-child(4) { left: 80%; animation-delay: 0.6s; }
+.cosmic-p:nth-child(5) { left: 30%; animation-delay: 0.8s; }
+.cosmic-p:nth-child(6) { left: 70%; animation-delay: 1s; }
+
+/* Animations */
+@keyframes cosmicRingPulse {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.1); opacity: 0.6; }
+}
+
+@keyframes cosmicPatternRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes cosmicEnergyFlow {
+    0% { transform: scaleX(0) translateX(0); opacity: 0; }
+    50% { transform: scaleX(1) translateX(50%); opacity: 1; }
+    100% { transform: scaleX(0) translateX(100%); opacity: 0; }
+}
+
+@keyframes cosmicParticleBurst {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% {
+        transform: translate(
+            calc(cos(var(--angle)) * 50px),
+            calc(sin(var(--angle)) * 50px)
+        ) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Hover effects */
+.cosmic-slider:hover .cosmic-orb {
+    filter: brightness(1.1);
+}
+
+.cosmic-input:checked + .cosmic-slider:hover .cosmic-orb {
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.5), 0 0 40px rgba(78, 205, 196, 0.3);
+}
+
+.cosmic-slider:hover .cosmic-bg {
+    opacity: 0.2;
+    animation: cosmicPan 20s linear infinite;
+}
+
+.cosmic-input:checked + .cosmic-slider:hover .cosmic-bg {
+    opacity: 0.6;
+}
+
+@keyframes cosmicPan {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 200%; }
+}
+
+/* Active state */
+.cosmic-input:active + .cosmic-slider .cosmic-orb {
+    transform: scale(0.95);
+}
+.cosmic-input:checked:active + .cosmic-slider .cosmic-orb {
+    transform: translateX(70px) scale(0.95) rotate(360deg);
+}
+
+/* --- Sparkle Button --- */
+.sparkle-btn {
+    border: none;
+    min-height: 4em;
+    border-radius: 3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    background: #1C1A1C;
+    cursor: pointer;
+    transition: all 450ms ease-in-out;
+}
+.sparkle-btn svg {
+    fill: #AAAAAA;
+    transition: all 800ms ease;
+}
+.sparkle-btn .text {
+    font-weight: 700;
+    color: #AAAAAA;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+.sparkle-btn:hover:not(:disabled) {
+    background: linear-gradient(0deg,#A47CF3,#683FEA);
+    box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4),
+    inset 0px -4px 0px 0px rgba(0, 0, 0, 0.2),
+    0px 0px 0px 4px rgba(255, 255, 255, 0.2),
+    0px 0px 180px 0px #9917FF;
+    transform: translateY(-2px);
+}
+.sparkle-btn:hover:not(:disabled) .text {
+    color: white;
+}
+.sparkle-btn:hover:not(:disabled) svg {
+    fill: white;
+    transform: scale(1.2);
+}
+.sparkle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
