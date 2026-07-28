@@ -23,7 +23,6 @@ interface StickerPackModalProps {
     onSettingsChange: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
     license: License | null;
     onUsageUpdate: (usage: number) => void;
-    onOpenPrint: (images: string[]) => void;
     userStyles?: UserStyle[];
     onDeleteUserStyle?: (id: string) => void;
 }
@@ -85,7 +84,7 @@ interface SelectedEmotion {
 type PackTextPosition = 'BOTTOM' | 'TOP' | 'INTEGRATED';
 
 const StickerPackModal: React.FC<StickerPackModalProps> = ({ 
-    isOpen, onClose, settings, onSettingsChange, license, onUsageUpdate, onOpenPrint, userStyles, onDeleteUserStyle 
+    isOpen, onClose, settings, onSettingsChange, license, onUsageUpdate, userStyles, onDeleteUserStyle 
 }) => {
     const { t, language } = useTranslation();
     const [refs, setRefs] = useState<string[]>([]);
@@ -791,17 +790,11 @@ const StickerPackModal: React.FC<StickerPackModalProps> = ({
                                 disabled={isGenerating || selectedEmotions.length === 0}
                                 isProcessing={isGenerating}
                             >
-                                {isGenerating ? t('generator.stop') : '✨ ' + t('harmony.action.generate')}
+                                {isGenerating ? t('generator.stop') : '✨ ' + t('generator.button')}
                             </SparkleButton>
                             
                             {results.length > 0 && (
                                 <div className="flex flex-col gap-2 mt-3">
-                                    <button 
-                                        onClick={() => { onOpenPrint(results); onClose(); }}
-                                        className="w-full py-3 md:py-4 rounded-2xl bg-[#5A5A5A] text-white font-black uppercase tracking-widest shadow-lg hover:bg-[#4A4A4A] transition-all flex items-center justify-center gap-2"
-                                    >
-                                        🖨️ {t('pack.action.layout')}
-                                    </button>
                                     <button 
                                         onClick={handleDownloadZip}
                                         disabled={isZipping}

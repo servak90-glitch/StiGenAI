@@ -1,5 +1,5 @@
 
-import { Settings, StyleLibrary, StyleKey, StyleCategoryKey, CardStyleLibrary, CardData, CardSettings } from './types';
+import { Settings, StyleLibrary, StyleKey, StyleCategoryKey } from './types';
 
 export const APP_VERSION = '6.6.2';
 
@@ -7,7 +7,7 @@ export const PRO_STICKER_CONTOUR_PROMPT = "STICKER CONTOUR: Around the object it
 
 export const NEGATIVE_PROMPTS: Record<string, string> = {
     BASE: "low quality, bad quality, lowres, ugly, blurry, pixelated, noise, artifacts, compression, jpeg artifacts, watermark, text, signature, logo, writing, username, bad anatomy, distorted, deformed, 3d render, shadows, depth of field, realistic textures, volumetric lighting, photorealism",
-    CARD_BASE: "photorealistic people, blurry backgrounds, messy textures, small unreadable scribbles, pixel art, low contrast, cluttered center, distorted edges, generic stock photo look, actual letters, readable text, fake words, unreadable text blocks",
+    BRAND_BASE: "photorealistic people, blurry backgrounds, messy textures, small unreadable scribbles, pixel art, low contrast, cluttered center, distorted edges, generic stock photo look, actual letters, readable text, fake words, unreadable text blocks",
     TEXT_ONLY: "illustration, painting, drawing, photo, photography, 3d render, character, person, face, animal, object, scenery, background",
     CONTAINER: "out of frame, cut off, cropped, partial, unfinished, subject touching edge, bleeding edges, overflow, border violation, spilling over, escaping container, dripts outside shape, content leakage, white halo, internal borders, shadows outside, busy background, messy patterns, clutter, complex geometry, warped geometry, asymmetrical shape, wobbly lines, hand-drawn circle, distorted square, irregular border weight",
     ISOLATION: "background, scene, wall, floor, room, environment, landscape, shadow, drop shadow, ambient occlusion, ground plane, contact shadows, cast shadows, floor lighting, reflections, noise, gradient background, border, frame, edge, container, square, rectangle, blueprint, grid, paper, poster, sheet, ground",
@@ -123,49 +123,6 @@ export const EMOTION_LIBRARY: EmotionCategory[] = [
     }
 ];
 
-export const CARD_FONTS = [
-    { name: 'Inter', family: '"Inter", sans-serif' },
-    { name: 'Montserrat', family: '"Montserrat", sans-serif' },
-    { name: 'Playfair Display', family: '"Playfair Display", serif' },
-    { name: 'JetBrains Mono', family: '"JetBrains Mono", monospace' },
-    { name: 'Bebas Neue', family: '"Bebas Neue", sans-serif' }
-];
-
-export const INITIAL_CARD_DATA: CardData = {
-    company: 'StiGenAi Corp',
-    companyDescription: 'Innovative AI-powered design studio focused on automation and high-end visual creativity.',
-    name: 'Yaroslav Design',
-    position: 'Lead Art Director',
-    address: 'Silicon Valley, CA',
-    phone: '+1 (555) 0123',
-    email: 'hello@stigenai.io',
-    website: 'www.stigenai.io',
-    slogan: 'Future of AI Design',
-    telegram: '@stigenai',
-    instagram: 'stigen_ai',
-    whatsapp: '+15550123',
-    qrCodeData: 'https://stigenai.io',
-    showQrCode: true,
-    logoImage: null,
-    showLogo: true,
-    showBackSide: true,
-    showSocial: true,
-    showDecor: true,
-    textOffsetX: 0,
-    textOffsetY: 0,
-    logoOffsetX: 0,
-    logoOffsetY: 0,
-    qrOffsetX: 0,
-    qrOffsetY: 0,
-    textScale: 1.0,
-    logoScale: 1.0,
-    qrScale: 1.0,
-    fontFamily: '"Inter", sans-serif',
-    letterSpacing: 0,
-    accentColor: '#A8D5D8',
-    isTextLight: false
-};
-
 export const INITIAL_SETTINGS: Settings = {
     style: '80S_CARTOON',
     quality: 'PREMIUM',
@@ -197,47 +154,12 @@ export const INITIAL_SETTINGS: Settings = {
     modelTier: 'FAST', 
 };
 
-export const INITIAL_CARD_SETTINGS: CardSettings = {
-    ...INITIAL_SETTINGS,
-    style: 'CORPORATE_SWISS' as any,
-    cardData: INITIAL_CARD_DATA,
-    aspectRatio: '16:9',
-    layout: 'CLASSIC'
-};
-
-export const CARD_STYLE_LIBRARY: CardStyleLibrary = {
-    'CORPORATE_SWISS': {
-        nameKey: 'card.style.swiss.name', emoji: '🇨🇭', badgeKey: 'card.style.swiss.badge', category: 'GRAPHICS_AND_DESIGN',
-        tagKeys: ['tags.minimalism', 'tags.modern', 'tags.architecture'],
-        strictPrompt: `Swiss Graphic Design style. Clean minimalist business card background. Strict grid layout. High whitespace. Primary colors only. No gradients. Focus on geometric balance. Leave center and corner zones clear for text overlay.`,
-        artisticPrompt: `Modern Bauhaus-inspired business card background. Abstract geometric shapes, clean lines, professional minimalist aesthetic. Primary color palette. Clear readability zones.`
-    },
-    'LUXURY_NOIR': {
-        nameKey: 'card.style.luxury.name', emoji: '💎', badgeKey: 'card.style.luxury.badge', category: 'ARCHITECTURE_AND_MINIMALISM',
-        tagKeys: ['tags.luxury', 'tags.elegant', 'tags.dark'],
-        strictPrompt: `Luxury business card background. Deep matte black texture. Gold foil decorative line art elements. Embossed professional aesthetic. Minimalist elegant composition. High contrast between black and gold.`,
-        artisticPrompt: `Premium dark mode business card. Silk texture background, subtle marble veins, gold leaf accents, sophisticated high-end design. Deep shadows and rich textures.`
-    },
-    'TECH_CYBER': {
-        nameKey: 'card.style.tech.name', emoji: '💻', badgeKey: 'card.style.tech.badge', category: 'TECHNO_AND_FUTURISM',
-        tagKeys: ['tags.technology', 'tags.neon', 'tags.cyber'],
-        strictPrompt: `Cybernetic interface business card background. Glassmorphism effect. Neon circuit lines. Semi-transparent layers. Futuristic digital grid. High-tech look, dark themes with glowing accents.`,
-        artisticPrompt: `Sci-fi tech business card. HUD elements, glowing data streams, holographic textures, blue and violet neon color scheme. Abstract technical data visualization.`
-    },
-    'ECO_BOTANICAL': {
-        nameKey: 'card.style.eco.name', emoji: '🌿', badgeKey: 'card.style.eco.badge', category: 'ART_TECHNIQUES',
-        tagKeys: ['tags.nature', 'tags.watercolor', 'tags.soft'],
-        strictPrompt: `Recycled paper texture background. Minimalist botanical line art. Earthy tones (sage, terracotta). Hand-drawn organic shapes. Natural professional look. Clear spaces for text.`,
-        artisticPrompt: `Eco-friendly business card design. Soft watercolor washes, organic leaf silhouettes, textured beige paper, calming nature-inspired aesthetic. Gentle gradients and soft forms.`
-    }
-};
-
 export const ARTISTIC_STYLES: string[] = ['GRAPHITE_SKETCH', 'PAPER_CUT_ART', 'LYRICAL_GRAPHIC', 'CHILD_DRAWING', 'LIQUID', 'NEON_COSMIC_CGI', 'SCRATCHBOARD_POSTER', 'SUNSET_VECTOR_NOIR'];
 export const ALWAYS_ARTISTIC_STYLES: string[] = ['NEON_COSMIC_CGI', 'POP_ART', 'CYBERPUNK', 'STAINED_GLASS', 'UFO_PSYCHEDELIC', 'NEO_POP', 'LIQUID', 'SCRATCHBOARD_POSTER', 'KNITTED_DIORAMA_ART', 'WATERCOLOR_NATURE'];
 
-export const REQUIRES_ISOLATION_STYLES: string[] = ['BRUTALISM', 'BOTANICAL_ILLUSTRATION', 'TECHNICAL_VECTOR'];
+export const REQUIRES_ISOLATION_STYLES: string[] = ['BRUTALISM', 'BOTANICAL_ILLUSTRATION', 'TECHNICAL_VECTOR', 'LASER_ENGRAVING'];
 export const REQUIRES_CONTAINER_STYLES: string[] = ['NEON_COSMIC_CGI', 'VIBRANT_DIGITAL_COMIC', 'PAPER_CUT', 'SUNSET_VECTOR_NOIR'];
-export const REQUIRES_STRICT_STYLES: StyleKey[] = ['VIBRANT_DIGITAL_COMIC', 'GRAPHITE_SKETCH', 'TECHNICAL_VECTOR', '80S_CARTOON'];
+export const REQUIRES_STRICT_STYLES: StyleKey[] = ['VIBRANT_DIGITAL_COMIC', 'GRAPHITE_SKETCH', 'TECHNICAL_VECTOR', '80S_CARTOON', 'LASER_ENGRAVING'];
 
 
 export const COMPOSITIONAL_STYLES: StyleKey[] = ['VIBRANT_DIGITAL_COMIC', 'NEON_COSMIC_CGI', 'PAPER_CUT', 'GRAPHITE_SKETCH', 'SUNSET_VECTOR_NOIR', 'KNITTED_DIORAMA_ART'];
@@ -259,6 +181,14 @@ export const STYLE_LIBRARY: StyleLibrary = {
         artisticPrompt: `Artistic 1-Bit Illustration - High contrast black ink on white. Bold graphic lines. Stencil aesthetic. No gradients. Minimalist and sharp. Only black and white.`,
         locks: ['materialTexture', 'subsurfaceScattering', 'particleEffects', 'lightingPreset', 'colorVibrance'], 
         tipKey: 'style.technical_vector.tip'
+    },
+    'LASER_ENGRAVING': {
+        nameKey: 'style.laser_engraving.name', emoji: '⚡', badgeKey: 'style.laser_engraving.badge', category: 'GRAPHICS_AND_DESIGN',
+        tagKeys: ['tags.engraving', 'tags.bw', 'tags.contrast', 'tags.laser', 'tags.precision'],
+        strictPrompt: `High-precision 8-bit Grayscale master artwork specifically engineered for laser photo engraving (compatible with LightBurn dithering algorithms and power modulation). Monochromatic High-Contrast Grayscale Master. Absolute 8-bit Grayscale spectrum (256 shades of grey). ABSOLUTELY NO RGB/CMYK COLOR PIXELS. Enhanced micro-contrast and local sharpness (Frequency Separation / High-Pass effect) to compensate for laser spot thermal diffusion. Controlled black depth: PREVENT solid #000000 block burns. All shadow regions must retain internal structure and line details to prevent material charring and detail loss. Optimized for physical engraving substrates (wood, leather, slate, anodized metal).`,
+        artisticPrompt: `High-precision 8-bit Grayscale master artwork specifically engineered for laser photo engraving (compatible with LightBurn dithering algorithms and power modulation). Monochromatic High-Contrast Grayscale Master. Absolute 8-bit Grayscale spectrum (256 shades of grey). ABSOLUTELY NO RGB/CMYK COLOR PIXELS. Enhanced micro-contrast and local sharpness (Frequency Separation / High-Pass effect) to compensate for laser spot thermal diffusion. Controlled black depth: PREVENT solid #000000 block burns. All shadow regions must retain internal structure and line details to prevent material charring and detail loss. Optimized for physical engraving substrates (wood, leather, slate, anodized metal).`,
+        locks: ['materialTexture', 'subsurfaceScattering', 'particleEffects', 'lightingPreset', 'colorVibrance'],
+        tipKey: 'style.laser_engraving.tip'
     },
     '80S_CARTOON': { 
         nameKey: 'style.80s_cartoon.name', emoji: '🎸', badgeKey: 'style.80s_cartoon.badge', category: 'GRAPHICS_AND_DESIGN',

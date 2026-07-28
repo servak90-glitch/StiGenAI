@@ -14,13 +14,14 @@ html, body {
 }
 
 body {
-    background-color: #F5F3F0;
+    background-color: #FAFAF9;
     background-image: 
-        radial-gradient(at 0% 0%, rgba(168, 213, 216, 0.15) 0, transparent 50%), 
-        radial-gradient(at 100% 100%, rgba(212, 197, 232, 0.15) 0, transparent 50%);
+        radial-gradient(at 10% 10%, rgba(99, 102, 241, 0.07) 0, transparent 40%),
+        radial-gradient(at 90% 15%, rgba(168, 85, 247, 0.07) 0, transparent 40%),
+        radial-gradient(at 50% 85%, rgba(14, 165, 233, 0.06) 0, transparent 50%);
     background-size: 100% 100%;
     background-attachment: fixed;
-    color: #5A5A5A;
+    color: #334155;
 }
 
 #root {
@@ -157,35 +158,35 @@ body {
     }
 }
 
-/* --- PASTEL UI UTILS --- */
+/* --- PASTEL & TRENDY UI UTILS --- */
 .clean-card {
-    background: #FEFCFB;
-    border: 1px solid #E8E3DC;
+    background: #FFFFFF;
+    border: 1px solid rgba(226, 232, 240, 0.8);
     border-radius: 24px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.03);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .clean-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-    border-color: #A8D5D8;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px -8px rgba(99, 102, 241, 0.12);
+    border-color: rgba(165, 180, 252, 0.8);
 }
 
 .ios-btn {
-    @apply flex items-center justify-center rounded-2xl font-bold transition-all active:scale-95 border border-transparent shadow-sm;
+    @apply flex items-center justify-center rounded-2xl font-bold transition-all active:scale-95 border border-slate-200/80 bg-white text-slate-700 hover:bg-slate-50 shadow-sm hover:shadow-md;
 }
 
 .ios-btn-primary {
-    @apply bg-slate-900 text-white hover:bg-slate-800 shadow-md;
+    @apply bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 text-white hover:opacity-95 shadow-lg shadow-indigo-500/20 border-transparent;
 }
 
 .glass-panel {
-    @apply bg-white/70 backdrop-blur-md border border-white/20;
+    @apply bg-white/80 backdrop-blur-xl border border-white/60 shadow-xl shadow-slate-200/50;
 }
 
 .glass-card {
-    @apply bg-white/40 backdrop-blur-sm border border-white/30 rounded-3xl;
+    @apply bg-white/70 backdrop-blur-md border border-slate-200/60 rounded-3xl shadow-sm hover:shadow-md transition-all;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

@@ -1,11 +1,9 @@
 
 const WORKER_CODE = `
 import * as tf from 'https://esm.sh/@tensorflow/tfjs@^4.22.0';
-import 'https://esm.sh/@tensorflow/tfjs-backend-webgpu@^4.22.0';
 import 'https://esm.sh/@tensorflow/tfjs-backend-webgl@^4.22.0';
+import 'https://esm.sh/@tensorflow/tfjs-backend-cpu@^4.22.0';
 
-// Use a reliable public CDN for the model artifacts
-// This avoids issues where local model files are missing or not served correctly
 const LOCAL_MODEL_PATH = '/models/model.json';
 const CDN_MODEL_PATH = 'https://unpkg.com/@upscalerjs/default-model@1.0.0-beta.17/models/model.json';
 const TILE_SIZE = 128;
@@ -15,41 +13,47 @@ let model = null;
 let isInitialized = false;
 
 // Initialize TensorFlow backend and model
-async function init() {
+async function init(baseUrl) {
     if (isInitialized) return;
 
     try {
-        // Try WebGPU first
+        // Try WebGL backend first as it is stable in workers
         try {
-            await tf.setBackend('webgpu');
-            await tf.ready();
-            console.log("Worker: Ultra-fast WebGPU backend active ⚡️");
-        } catch (gpuError) {
-            console.warn("Worker: WebGPU failed/unsupported, falling back to WebGL.", gpuError);
             await tf.setBackend('webgl');
             await tf.ready();
-            console.log("Worker: Stable WebGL backend active 🚀");
+            console.log("Worker: WebGL backend active 🚀");
+        } catch (gpuError) {
+            console.warn("Worker: WebGL failed, falling back to CPU", gpuError);
+            try {
+                await tf.setBackend('cpu');
+                await tf.ready();
+                console.log("Worker: CPU backend active ⚙️");
+            } catch (cpuError) {
+                console.warn("Worker: CPU backend failed", cpuError);
+            }
         }
 
-        // Load the model: try local first (which uses local group1-shard1of1.weights), then CDN
-        const localUrl = self.location.origin + LOCAL_MODEL_PATH;
+        // Load the model: try local first, then CDN
+        const localUrl = (baseUrl || '') + LOCAL_MODEL_PATH;
         try {
             console.log("Worker: Attempting local model load from", localUrl);
             model = await tf.loadLayersModel(localUrl);
-            console.log("Worker: Local model (group1-shard1of1.weights) loaded successfully! 🎯");
+            console.log("Worker: Local model loaded successfully! 🎯");
         } catch (localErr) {
             console.warn("Worker: Local model load failed, falling back to CDN:", localErr);
             model = await tf.loadLayersModel(CDN_MODEL_PATH);
             console.log("Worker: CDN model loaded successfully!");
         }
         
-        // Warmup
-        const dummy = tf.zeros([1, 32, 32, 3]);
-        model.predict(dummy);
-        dummy.dispose();
-        
-        isInitialized = true;
-        console.log("Worker: Model initialized");
+        if (model) {
+            const dummy = tf.zeros([1, 32, 32, 3]);
+            model.predict(dummy);
+            dummy.dispose();
+            isInitialized = true;
+            console.log("Worker: Model initialized");
+        } else {
+            throw new Error("Could not load neural network weights");
+        }
     } catch (e) {
         console.error("Worker Init Error:", e);
         throw new Error("Failed to init AI in worker: " + e.message);
@@ -64,8 +68,6 @@ async function processTiled(source) {
     
     if (inW === 0 || inH === 0) throw new Error("Input source has 0 dimension");
 
-    // Determine scale factor (run a quick check)
-    // We assume the model is 2x.
     const scale = 2; 
 
     const outW = Math.round(inW * scale);
@@ -73,12 +75,10 @@ async function processTiled(source) {
     
     if (outW === 0 || outH === 0) throw new Error("Output would be 0 dimension");
 
-    // Create intermediate canvas for source reading
     const srcCanvas = new OffscreenCanvas(inW, inH);
     const srcCtx = srcCanvas.getContext('2d');
     srcCtx.drawImage(source, 0, 0);
 
-    // Create output canvas
     const outputCanvas = new OffscreenCanvas(outW, outH);
     const outCtx = outputCanvas.getContext('2d');
     if (!outCtx) throw new Error("Output context failed");
@@ -88,7 +88,6 @@ async function processTiled(source) {
 
     for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-            // Yield to event loop occasionally to keep worker responsive
             if (c % 2 === 0) await new Promise(res => setTimeout(res, 0));
 
             const x = c * TILE_SIZE;
@@ -108,7 +107,6 @@ async function processTiled(source) {
 
             const tileData = srcCtx.getImageData(srcX, srcY, srcW, srcH);
             
-            // Process tile
             const outputTensor = tf.tidy(() => {
                 let input = tf.browser.fromPixels(tileData).toFloat().div(255.0);
                 input = input.expandDims(0);
@@ -119,12 +117,10 @@ async function processTiled(source) {
             const tileOutW = srcW * scale;
             const tileOutH = srcH * scale;
 
-            // Write to temp canvas
             const tempCanvas = new OffscreenCanvas(tileOutW, tileOutH);
             await tf.browser.toPixels(outputTensor, tempCanvas);
             outputTensor.dispose();
 
-            // Draw valid region to output
             outCtx.drawImage(
                 tempCanvas, 
                 padLeft * scale, padTop * scale, 
@@ -138,42 +134,80 @@ async function processTiled(source) {
 }
 
 self.onmessage = async (e) => {
-    const { id, type, image } = e.data;
+    const { id, type, image, baseUrl } = e.data;
 
     if (type === 'UPSCALE') {
         try {
-            await init();
+            await init(baseUrl);
             
-            // 1. First Pass (2x)
             let resultCanvas = await processTiled(image);
-            
             if (!resultCanvas || resultCanvas.width === 0 || resultCanvas.height === 0) {
                  throw new Error("First pass resulted in empty image");
             }
             
-            // 2. Second Pass (if target is 4x)
-            // Convert OffscreenCanvas to ImageBitmap for second pass
             const firstPassBitmap = resultCanvas.transferToImageBitmap();
-            
-            // Second Pass
             const finalCanvas = await processTiled(firstPassBitmap);
             
             if (!finalCanvas || finalCanvas.width === 0 || finalCanvas.height === 0) {
                  throw new Error("Second pass resulted in empty image");
             }
             
-            // Return final result
             const finalBitmap = finalCanvas.transferToImageBitmap();
-            
             self.postMessage({ id, success: true, image: finalBitmap }, [finalBitmap]);
             
         } catch (error) {
             console.error("Worker Upscale Error:", error);
-            self.postMessage({ id, success: false, error: error.message });
+            self.postMessage({ id, success: false, error: error.message || "Upscale failed" });
         }
     }
 };
 `;
+
+async function fallbackCanvasUpscale(base64Image: string): Promise<string> {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            try {
+                const w = img.width;
+                const h = img.height;
+                const canvas = document.createElement('canvas');
+                canvas.width = w * 4;
+                canvas.height = h * 4;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    resolve(base64Image);
+                    return;
+                }
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                
+                const canvas2x = document.createElement('canvas');
+                canvas2x.width = w * 2;
+                canvas2x.height = h * 2;
+                const ctx2x = canvas2x.getContext('2d');
+                if (ctx2x) {
+                    ctx2x.imageSmoothingEnabled = true;
+                    ctx2x.imageSmoothingQuality = 'high';
+                    ctx2x.drawImage(img, 0, 0, w * 2, h * 2);
+                    ctx.drawImage(canvas2x, 0, 0, w * 4, h * 4);
+                } else {
+                    ctx.drawImage(img, 0, 0, w * 4, h * 4);
+                }
+
+                canvas.toBlob((blob) => {
+                    if (blob) resolve(URL.createObjectURL(blob));
+                    else resolve(base64Image);
+                }, 'image/png');
+            } catch (err) {
+                console.warn("Canvas upscale failed, returning original:", err);
+                resolve(base64Image);
+            }
+        };
+        img.onerror = () => resolve(base64Image);
+        img.src = base64Image;
+    });
+}
 
 export class UpscalerService {
     private worker: Worker | null = null;
@@ -185,11 +219,9 @@ export class UpscalerService {
     private initWorker() {
         if (!this.worker) {
             try {
-                // Create a Blob from the worker code string
                 const blob = new Blob([WORKER_CODE], { type: 'application/javascript' });
                 this.workerUrl = URL.createObjectURL(blob);
                 
-                // Initialize worker from Blob URL - this bypasses cross-origin restrictions
                 this.worker = new Worker(this.workerUrl, { type: 'module' });
                 
                 this.worker.onmessage = (e) => {
@@ -198,7 +230,6 @@ export class UpscalerService {
                     if (req) {
                         this.pendingRequests.delete(id);
                         if (success) {
-                            // image is ImageBitmap. Convert to Blob URL.
                             this.bitmapToBlobUrl(image).then(url => {
                                  req.resolve(url);
                             }).catch(err => {
@@ -212,6 +243,10 @@ export class UpscalerService {
 
                 this.worker.onerror = (e) => {
                     console.error("Worker Global Error:", e);
+                    for (const req of this.pendingRequests.values()) {
+                        req.reject(new Error("Worker thread error"));
+                    }
+                    this.pendingRequests.clear();
                 };
             } catch (e) {
                 console.error("Failed to initialize worker:", e);
@@ -227,8 +262,6 @@ export class UpscalerService {
         if (!ctx) throw new Error("Canvas context failed");
         
         ctx.drawImage(bitmap, 0, 0);
-        
-        // Clean up bitmap to avoid memory leaks immediately
         bitmap.close(); 
         
         return new Promise((resolve, reject) => {
@@ -247,19 +280,54 @@ export class UpscalerService {
 
     public async upscale(base64Image: string): Promise<string> {
         this.initWorker();
-        
-        if (!this.worker) {
-            throw new Error("Upscaler worker failed to initialize");
-        }
 
         const id = Date.now().toString() + Math.random().toString();
-        const bitmap = await this.base64ToBitmap(base64Image);
+        
+        let bitmap: ImageBitmap | null = null;
+        try {
+            bitmap = await this.base64ToBitmap(base64Image);
+        } catch (e) {
+            console.warn("Could not create ImageBitmap, falling back to canvas upscale:", e);
+            return fallbackCanvasUpscale(base64Image);
+        }
 
-        return new Promise((resolve, reject) => {
-            this.pendingRequests.set(id, { resolve, reject });
-            
-            // Transfer the bitmap to the worker (zero-copy)
-            this.worker!.postMessage({ id, type: 'UPSCALE', image: bitmap }, [bitmap]);
+        if (!this.worker) {
+            return fallbackCanvasUpscale(base64Image);
+        }
+
+        return new Promise<string>((resolve, reject) => {
+            const timeoutId = setTimeout(async () => {
+                if (this.pendingRequests.has(id)) {
+                    console.warn("Upscaler worker timed out after 12s, using fallback canvas upscaler.");
+                    this.pendingRequests.delete(id);
+                    try {
+                        const fallbackUrl = await fallbackCanvasUpscale(base64Image);
+                        resolve(fallbackUrl);
+                    } catch (e) {
+                        reject(new Error("Upscale timed out and fallback failed"));
+                    }
+                }
+            }, 12000);
+
+            this.pendingRequests.set(id, {
+                resolve: (val) => {
+                    clearTimeout(timeoutId);
+                    resolve(val);
+                },
+                reject: async (err) => {
+                    clearTimeout(timeoutId);
+                    console.warn("Worker error, running canvas fallback upscale:", err);
+                    try {
+                        const fallbackUrl = await fallbackCanvasUpscale(base64Image);
+                        resolve(fallbackUrl);
+                    } catch (e) {
+                        reject(err);
+                    }
+                }
+            });
+
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            this.worker!.postMessage({ id, type: 'UPSCALE', image: bitmap, baseUrl: origin }, [bitmap]);
         });
     }
     
@@ -276,3 +344,4 @@ export class UpscalerService {
 }
 
 export const upscalerService = new UpscalerService();
+

@@ -10,6 +10,7 @@ import { processStickerImage, blobUrlToBase64 } from '../utils/imageProcessor';
 import { analyzeStickerOutline } from '../utils/smartTracer';
 import { saveUserStyle, saveToHistory } from '../utils/db';
 import { INITIAL_SETTINGS, NEGATIVE_PROMPTS } from '../constants';
+import { STYLE_TRANSPOSER_EXTRACTION_PROMPT } from '../prompts';
 import MultiCircleLoader from './MultiCircleLoader';
 import CosmicToggle from './CosmicToggle';
 import SparkleButton from './SparkleButton';
@@ -20,13 +21,12 @@ interface StyleTransposerModalProps {
     onClose: () => void;
     license: License | null;
     onUsageUpdate: (usage: number) => void;
-    onOpenPrint: (images: string[]) => void;
     onStyleSaved?: () => void;
     isDevMode: boolean;
 }
 
 const StyleTransposerModal: React.FC<StyleTransposerModalProps> = ({ 
-    isOpen, onClose, license, onUsageUpdate, onOpenPrint, onStyleSaved, isDevMode
+    isOpen, onClose, license, onUsageUpdate, onStyleSaved, isDevMode: _isDevMode
 }) => {
     const { t } = useTranslation();
     
@@ -47,6 +47,7 @@ const StyleTransposerModal: React.FC<StyleTransposerModalProps> = ({
     const [statusMessage, setStatusMessage] = useState<string>('');
     const [saveName, setSaveName] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [copiedPromptToast, setCopiedPromptToast] = useState(false);
     
     // Config State
     const [modelTier, setModelTier] = useState<ModelTier>('PRO');
@@ -115,6 +116,12 @@ const StyleTransposerModal: React.FC<StyleTransposerModalProps> = ({
         if (!blueprint) return;
         navigator.clipboard.writeText(JSON.stringify(blueprint, null, 2));
         alert(t('transposer.alert.copied'));
+    };
+
+    const handleCopyExtractionPrompt = () => {
+        navigator.clipboard.writeText(STYLE_TRANSPOSER_EXTRACTION_PROMPT);
+        setCopiedPromptToast(true);
+        setTimeout(() => setCopiedPromptToast(false), 2500);
     };
 
     const constructPrompt = (bp: StyleBlueprint) => {
@@ -425,9 +432,26 @@ OUTPUT FORMAT: Return STRICT JSON only matching the schema.`;
 
     const renderStep1 = () => (
         <div className="flex flex-col h-full animate-fade-in">
-            <div className="text-center mb-8">
+            <div className="text-center mb-6">
                 <h3 className="text-2xl font-black text-[#5A5A5A] uppercase tracking-tighter mb-2">Шаг 1: ДНК Стиля</h3>
                 <p className="text-sm text-slate-500">Загрузите изображения, стиль которых хотите скопировать.</p>
+            </div>
+
+            {/* Prompt Helper Banner */}
+            <div className="bg-indigo-50/80 border border-indigo-200/60 rounded-2xl p-3 mb-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-indigo-950">
+                <div className="flex items-center gap-2">
+                    <span className="text-lg">💡</span>
+                    <span>Нужно считать стиль в другом ИИ? Скопируйте наш специальный промпт для внешних нейросетей.</span>
+                </div>
+                <button
+                    type="button"
+                    onClick={handleCopyExtractionPrompt}
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs whitespace-nowrap transition shadow-sm flex items-center gap-1.5 active:scale-95 flex-shrink-0"
+                    title={t('transposer.copyExtractionPromptTip')}
+                >
+                    <span>📋</span>
+                    <span>{copiedPromptToast ? t('preview.copied') : t('transposer.action.copyExtractionPrompt')}</span>
+                </button>
             </div>
             
             <div className="flex-1 overflow-y-auto p-4 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50 mb-6 relative">
@@ -453,18 +477,30 @@ OUTPUT FORMAT: Return STRICT JSON only matching the schema.`;
                  <input type="file" ref={styleInputRef} onChange={handleStyleUpload} multiple accept="image/*" className="hidden" />
             </div>
 
-            <button 
-                onClick={extractStyleDNA}
-                disabled={isExtracting || styleRefs.length === 0}
-                className={`w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl transition-all ${isExtracting || styleRefs.length === 0 ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95'}`}
-            >
-                {isExtracting ? (
-                    <div className="flex items-center justify-center gap-3">
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        {t('transposer.status.extracting')}
-                    </div>
-                ) : "Извлечь ДНК Стиля"}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+                <button 
+                    onClick={extractStyleDNA}
+                    disabled={isExtracting || styleRefs.length === 0}
+                    className={`flex-1 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl transition-all ${isExtracting || styleRefs.length === 0 ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-indigo-600 text-white hover:bg-indigo-700 active:scale-95'}`}
+                >
+                    {isExtracting ? (
+                        <div className="flex items-center justify-center gap-3">
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            {t('transposer.status.extracting')}
+                        </div>
+                    ) : "Извлечь ДНК Стиля"}
+                </button>
+
+                <button
+                    type="button"
+                    onClick={handleCopyExtractionPrompt}
+                    className="px-5 py-5 bg-white border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50 hover:border-indigo-300 rounded-2xl font-black text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 active:scale-95"
+                    title={t('transposer.copyExtractionPromptTip')}
+                >
+                    <span>📋</span>
+                    <span>{copiedPromptToast ? t('preview.copied') : t('transposer.action.copyExtractionPrompt')}</span>
+                </button>
+            </div>
         </div>
     );
 
@@ -573,9 +609,25 @@ OUTPUT FORMAT: Return STRICT JSON only matching the schema.`;
 
                         {blueprint && (
                             <div className="bg-indigo-50 p-5 rounded-3xl border border-indigo-100 relative overflow-hidden">
-                                <div className="flex justify-between items-center mb-3 relative z-10">
+                                <div className="flex justify-between items-center mb-3 relative z-10 flex-wrap gap-2">
                                     <h4 className="text-xs font-black text-indigo-800 uppercase tracking-widest">Извлеченный ДНК</h4>
-                                    {isDevMode && <button onClick={copyBlueprint} className="text-[10px] font-bold text-indigo-500 hover:text-indigo-700">JSON</button>}
+                                    <div className="flex items-center gap-2">
+                                        <button 
+                                            type="button" 
+                                            onClick={handleCopyExtractionPrompt} 
+                                            className="text-[10px] font-bold bg-white text-indigo-700 px-2 py-1 rounded-lg border border-indigo-200 hover:bg-indigo-100 transition"
+                                            title={t('transposer.copyExtractionPromptTip')}
+                                        >
+                                            {copiedPromptToast ? "✓ Скопировано" : "📋 Промпт анализа"}
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            onClick={copyBlueprint} 
+                                            className="text-[10px] font-bold bg-indigo-600 text-white px-2 py-1 rounded-lg hover:bg-indigo-700 transition"
+                                        >
+                                            📄 Copy JSON
+                                        </button>
+                                    </div>
                                 </div>
                                 <p className="text-[10px] text-indigo-900 leading-relaxed font-medium relative z-10 max-h-32 overflow-y-auto custom-scrollbar">
                                     {blueprint.style_metadata.vibe_description}
@@ -643,9 +695,6 @@ OUTPUT FORMAT: Return STRICT JSON only matching the schema.`;
 
                     <div className="flex gap-4 flex-shrink-0">
                          <button onClick={handleReset} className="px-8 py-4 bg-slate-200 text-slate-600 rounded-2xl font-bold uppercase tracking-widest hover:bg-slate-300 transition-all">Заново</button>
-                         <button onClick={() => { onOpenPrint(resultImg ? [resultImg] : []); onClose(); }} className="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
-                             🖨️ {t('dashboard.print')}
-                         </button>
                          <button onClick={handleDownload} className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl">
                              💾 {t('action.download')}
                          </button>
@@ -671,9 +720,20 @@ OUTPUT FORMAT: Return STRICT JSON only matching the schema.`;
                             </div>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-4 hover:bg-slate-50 rounded-full transition text-slate-300">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
+                    <div className="flex items-center gap-3 z-10">
+                        <button
+                            type="button"
+                            onClick={handleCopyExtractionPrompt}
+                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition border border-indigo-200/80 shadow-sm active:scale-95"
+                            title={t('transposer.copyExtractionPromptTip')}
+                        >
+                            <span>📋</span>
+                            <span>{copiedPromptToast ? t('preview.copied') : t('transposer.action.copyExtractionPrompt')}</span>
+                        </button>
+                        <button onClick={onClose} className="p-4 hover:bg-slate-50 rounded-full transition text-slate-300">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
                 </header>
 
                 <div className="flex-1 overflow-hidden p-8 relative">

@@ -1,6 +1,6 @@
 
 import { openDB, DBSchema } from 'idb';
-import { Settings, Preset, License, BrandKit, StyleBlueprint, StyleCategoryKey } from '../types';
+import { Settings, Preset, License, StyleBlueprint, StyleCategoryKey } from '../types';
 import { blobUrlToBase64 } from './imageProcessor';
 
 interface StickerHistoryItem {
@@ -45,10 +45,6 @@ interface StickerDB extends DBSchema {
         key: string;
         value: PromptCacheItem;
     };
-    brandKits: {
-        key: string;
-        value: BrandKit;
-    };
     userStyles: {
         key: string;
         value: UserStyle;
@@ -60,7 +56,6 @@ const HISTORY_STORE = 'history';
 const PRESETS_STORE = 'presets';
 const LICENSES_STORE = 'licenses';
 const CACHE_STORE = 'promptCache';
-const BRAND_KITS_STORE = 'brandKits';
 const USER_STYLES_STORE = 'userStyles';
 const MAX_ITEMS = 50;
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
@@ -85,11 +80,6 @@ export const initDB = async () => {
             if (oldVersion < 4) {
                 if (!db.objectStoreNames.contains(CACHE_STORE)) {
                     db.createObjectStore(CACHE_STORE, { keyPath: 'key' });
-                }
-            }
-            if (oldVersion < 5) {
-                if (!db.objectStoreNames.contains(BRAND_KITS_STORE)) {
-                    db.createObjectStore(BRAND_KITS_STORE, { keyPath: 'id' });
                 }
             }
             if (oldVersion < 6 || oldVersion < 7) {
@@ -179,22 +169,6 @@ export const deleteFromHistory = async (id: string) => {
 export const clearHistory = async () => {
     const db = await initDB();
     await db.clear(HISTORY_STORE);
-};
-
-// Brand Kits Operations
-export const saveBrandKit = async (kit: BrandKit) => {
-    const db = await initDB();
-    await db.put(BRAND_KITS_STORE, kit);
-};
-
-export const getBrandKits = async (): Promise<BrandKit[]> => {
-    const db = await initDB();
-    return db.getAll(BRAND_KITS_STORE);
-};
-
-export const deleteBrandKit = async (id: string) => {
-    const db = await initDB();
-    await db.delete(BRAND_KITS_STORE, id);
 };
 
 // User Styles Operations

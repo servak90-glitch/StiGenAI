@@ -158,6 +158,9 @@ export const translations: Record<string, { ru: string; en: string }> = {
     'transposer.label.poseLock': { ru: 'Сохранить позу', en: 'Pose Lock' },
     'transposer.label.cameraLock': { ru: 'Замок камеры', en: 'Camera Lock' },
     'transposer.label.detailLock': { ru: 'Замок деталей', en: 'Detail Lock' },
+    'transposer.action.copyExtractionPrompt': { ru: 'Копировать промпт считывания стиля', en: 'Copy Style Analysis Prompt' },
+    'transposer.alert.promptCopied': { ru: 'Промпт считывания стиля скопирован в буфер обмена!', en: 'Style analysis prompt copied to clipboard!' },
+    'transposer.copyExtractionPromptTip': { ru: 'Скопируйте промпт, чтобы загрузить картинку в другой ИИ и получить описание стиля', en: 'Copy prompt to upload an image to another AI and get style description' },
 
     // --- Wizard Modal ---
     'wizard.title': { ru: 'Быстрый стикер', en: 'Quick Sticker' },
@@ -179,9 +182,28 @@ export const translations: Record<string, { ru: string; en: string }> = {
     // --- Dashboard & Navigation ---
     'hero.title.create': { ru: 'Создавайте магические', en: 'Create Magical' },
     'hero.title.stickers': { ru: 'AI Стикеры', en: 'AI Stickers' },
-    'dashboard.cards': { ru: 'Визитки', en: 'Business Cards' },
-    'dashboard.print': { ru: 'Печать', en: 'Print Hub' },
-    'dashboard.harmony': { ru: 'Фирменный стиль', en: 'Brand Kit' },
+    'lang.hint': {
+        ru: '🌐 Language: Russian. To switch to English, open the ⚙️ Settings menu',
+        en: '🌐 Язык: English. Чтобы переключить на русский, откройте меню ⚙️'
+    },
+    'home.about.title': {
+        ru: 'Универсальная ИИ-студия для графики и стикеров',
+        en: 'All-in-One AI Studio for Graphics & Stickers'
+    },
+    'home.about.desc': {
+        ru: 'StiGenAi объединяет передовые модели Gemini 3 Pro и специализированные графические инструменты в один лёгкий и интуитивный рабочий процесс. Выберите нужный режим в верхней панели, чтобы начать.',
+        en: 'StiGenAi combines state-of-the-art Gemini 3 Pro models and dedicated graphic processing tools into one light, intuitive workflow. Select any tool in the top bar above to begin.'
+    },
+    'home.feature.generator.title': { ru: 'Начать творить', en: 'Sticker Studio' },
+    'home.feature.generator.desc': { ru: 'Создание стикеров с выбором из десятков художественных стилей и гибкой настройкой', en: 'Create custom stickers with deep style customization and background isolation' },
+    'home.feature.transposer.title': { ru: 'Транслятор стиля', en: 'Style Transposer' },
+    'home.feature.transposer.desc': { ru: 'Анализ и перенос визуального стиля с вашего референса на новые объекты', en: 'Analyze and clone aesthetic styles from reference photos onto new prompts' },
+    'home.feature.upscaler.title': { ru: 'AI Апскейлер x4', en: 'AI Upscaler x4' },
+    'home.feature.upscaler.desc': { ru: 'Повышение четкости и детализации изображений для профессиональной печати', en: 'Enhance resolution and micro-details for high-res printing' },
+    'home.feature.pack.title': { ru: 'Стикерпаки', en: 'Sticker Packs' },
+    'home.feature.pack.desc': { ru: 'Пакетная генерация наборов эмоций персонажа с готовой версткой листов', en: 'Batch generate consistent emotion packs with ready-to-print sheet layouts' },
+    'home.feature.vector.title': { ru: 'Векторизация SVG', en: 'SVG Vectorizer' },
+    'home.feature.vector.desc': { ru: 'Преобразование растровой графики в масштабируемые векторные контуры', en: 'Convert raster art into clean, scalable vector paths' },
     'dashboard.pack': { ru: 'Стикерпак', en: 'Sticker Pack' },
     'dashboard.transposer': { ru: 'Транслятор стиля', en: 'Style Transposer' },
     'dashboard.start': { ru: 'Начать творить', en: 'Start Creating' },
@@ -405,6 +427,21 @@ export const translations: Record<string, { ru: string; en: string }> = {
     'style.scandinavian.badge': { ru: 'Арт', en: 'Art' },
     'style.stained_glass.name': { ru: 'Витраж', en: 'Stained Glass' },
     'style.stained_glass.badge': { ru: 'Арт', en: 'Art' },
+    'style.laser_engraving.name': { ru: 'Лазерная Гравировка', en: 'Laser Engraving' },
+    'style.laser_engraving.badge': { ru: 'Строгий', en: 'Strict' },
+    'style.laser_engraving.tip': {
+        ru: '<li><b>Лазерная гравировка:</b> Стиль оптимизирован под алгоритмы LightBurn, предотвращает черные выжженные блоки, сохраняет структуру теней и автоматически настраивает чисто белый фон.</li><li><b>Параметры:</b> Автоматически заблокирован режим изоляции (на холсте).</li>',
+        en: '<li><b>Laser Engraving:</b> Optimized for LightBurn dithering, prevents solid burnt blacks, retains shadow structure, and ensures a solid pure white background.</li><li><b>Settings:</b> Automatically locks to canvas (isolation) mode.</li>'
+    },
+    'style.laser_engraving.isolation_lock': {
+        ru: 'Режим изоляции (холст) принудительно включен для лазерной гравировки.',
+        en: 'Isolation (canvas) mode is strictly enforced for laser engraving.'
+    },
+    'tags.engraving': { ru: 'гравировка', en: 'engraving' },
+    'tags.bw': { ru: 'чб', en: 'b&w' },
+    'tags.contrast': { ru: 'контраст', en: 'contrast' },
+    'tags.laser': { ru: 'лазер', en: 'laser' },
+    'tags.precision': { ru: 'точность', en: 'precision' },
     'style.custom.name': { ru: 'Пользовательский', en: 'Custom' },
     'style.custom.badge': { ru: 'Свой', en: 'Custom' },
 
@@ -459,96 +496,6 @@ export const translations: Record<string, { ru: string; en: string }> = {
     'pack.anchor.label': { ru: 'Стилевой Якорь (Опционально)', en: 'Style Anchor (Optional)' },
     'pack.anchor.upload': { ru: 'Загрузить прошлый стикер', en: 'Upload Previous Sticker' },
 
-    // --- Print Master ---
-    'print.interactive.title': { ru: 'Интерактивная Печать', en: 'Interactive Print' },
-    'print.setup.title': { ru: 'Настройки Листа', en: 'Sheet Setup' },
-    'print.action.add': { ru: 'Добавить фото', en: 'Add Photo' },
-    'print.action.bgGen': { ru: 'Генерация Фона', en: 'Generate BG' },
-    'print.status.bgGen': { ru: 'Генерация...', en: 'Generating...' },
-    'print.tools.duplicate': { ru: 'Дублировать', en: 'Duplicate' },
-    'print.tools.delete': { ru: 'Удалить', en: 'Delete' },
-    'print.action.clear': { ru: 'Очистить лист', en: 'Clear Sheet' },
-    'print.paper.a4': { ru: 'A4 • 300 DPI • CMYK Ready', en: 'A4 • 300 DPI • CMYK Ready' },
-    'print.action.export': { ru: 'Экспорт в печать', en: 'Export for Print' },
-
-    // --- Harmony ---
-    'harmony.title': { ru: 'Бренд Кит', en: 'Brand Kit' },
-    'harmony.subtitle': { ru: 'Генерация айдентики', en: 'Identity Generation' },
-    'harmony.status.logo': { ru: 'Генерация лого...', en: 'Generating logo...' },
-    'harmony.status.pattern': { ru: 'Создание паттерна...', en: 'Creating pattern...' },
-    'harmony.status.social': { ru: 'Аватар соцсетей...', en: 'Social avatar...' },
-    'harmony.status.banner': { ru: 'Баннер сайта...', en: 'Web banner...' },
-    'harmony.asset.logo': { ru: 'Логотип', en: 'Logo' },
-    'harmony.asset.pattern': { ru: 'Паттерн', en: 'Pattern' },
-    'harmony.asset.social': { ru: 'Соцсети', en: 'Social' },
-    'harmony.asset.banner': { ru: 'Баннер', en: 'Banner' },
-    'harmony.action.generate': { ru: 'Создать стиль', en: 'Forge Identity' },
-    'harmony.action.downloadAll': { ru: 'Скачать всё', en: 'Download All' },
-
-    // --- Card ---
-    'card.generator.title': { ru: 'Конструктор Визиток', en: 'Card Generator' },
-    'card.category.branding': { ru: 'Брендинг', en: 'Branding' },
-    'card.brand.hub': { ru: 'Brand Hub', en: 'Brand Hub' },
-    'card.brand.load': { ru: 'Загрузить бренд...', en: 'Load brand...' },
-    'card.brand.empty': { ru: 'Нет сохраненных брендов', en: 'No saved brands' },
-    'card.brand.save': { ru: 'Сохранить текущий', en: 'Save Current' },
-    'card.action.visionScan': { ru: 'Vision Scan (из фото)', en: 'Vision Scan (from photo)' },
-    'card.field.company': { ru: 'Компания', en: 'Company' },
-    'card.field.accent': { ru: 'Акцент', en: 'Accent' },
-    'card.field.description': { ru: 'О компании', en: 'About Company' },
-    'card.field.logo': { ru: 'Логотип', en: 'Logo' },
-    'card.action.generateLogo': { ru: 'Создать', en: 'Create' },
-    'card.category.employee': { ru: 'Сотрудник', en: 'Employee' },
-    'card.batch.import': { ru: 'Импорт CSV', en: 'Import CSV' },
-    'card.batch.count': { ru: 'Записей: {count}', en: 'Entries: {count}' },
-    'card.field.name': { ru: 'Имя', en: 'Name' },
-    'card.field.position': { ru: 'Должность', en: 'Position' },
-    'card.field.phone': { ru: 'Телефон', en: 'Phone' },
-    'card.field.email': { ru: 'Email', en: 'Email' },
-    'card.field.website': { ru: 'Сайт', en: 'Website' },
-    'card.field.address': { ru: 'Адрес', en: 'Address' },
-    'card.field.telegram': { ru: 'Telegram', en: 'Telegram' },
-    'card.field.instagram': { ru: 'Instagram', en: 'Instagram' },
-    'card.field.whatsapp': { ru: 'WhatsApp', en: 'WhatsApp' },
-    'card.category.visual': { ru: 'Визуал', en: 'Visual' },
-    'card.style.swiss.name': { ru: 'Швейцарский', en: 'Swiss' },
-    'card.style.luxury.name': { ru: 'Люкс', en: 'Luxury' },
-    'card.style.tech.name': { ru: 'Техно', en: 'Tech' },
-    'card.style.eco.name': { ru: 'Эко', en: 'Eco' },
-    'card.field.contrast': { ru: 'Белый текст', en: 'White Text' },
-    'card.action.colorSuite': { ru: 'Генерация палитры', en: 'Generate Suite' },
-    'card.category.layout': { ru: 'Макет', en: 'Layout' },
-    'card.layout.classic': { ru: 'Классика', en: 'Classic' },
-    'card.layout.center': { ru: 'Центр', en: 'Center' },
-    'card.layout.vertical': { ru: 'Вертикаль', en: 'Vertical' },
-    'card.field.font': { ru: 'Шрифт', en: 'Font' },
-    'card.toggle.backside': { ru: 'Оборотная сторона', en: 'Back Side' },
-    'card.toggle.logo': { ru: 'Логотип', en: 'Logo' },
-    'card.toggle.qr': { ru: 'QR Код', en: 'QR Code' },
-    'card.toggle.social': { ru: 'Соцсети', en: 'Social' },
-    'card.toggle.decor': { ru: 'Декор', en: 'Decor' },
-    'card.field.qrMode': { ru: 'Режим QR', en: 'QR Mode' },
-    'card.qrMode.vcard': { ru: 'vCard (Контакт)', en: 'vCard (Contact)' },
-    'card.qrMode.link': { ru: 'Ссылка', en: 'Link' },
-    'card.offset.title': { ru: 'Точная настройка', en: 'Precision' },
-    'card.action.resetLayout': { ru: 'Сброс', en: 'Reset' },
-    'card.action.alignCenter': { ru: 'Центр', en: 'Center' },
-    'card.offset.textScale': { ru: 'Масштаб текста', en: 'Text Scale' },
-    'card.offset.letterSpacing': { ru: 'Межбуквенный', en: 'Letter Spacing' },
-    'card.offset.logoScale': { ru: 'Размер лого', en: 'Logo Size' },
-    'card.offset.qrScale': { ru: 'Размер QR', en: 'QR Size' },
-    'card.side.front': { ru: 'Лицо', en: 'Front' },
-    'card.side.back': { ru: 'Оборот', en: 'Back' },
-    'card.toggle.mockup': { ru: 'Мокап', en: 'Mockup' },
-    'card.labels.bleed': { ru: 'Вылет', en: 'Bleed' },
-    'card.labels.safeZone': { ru: 'Безопасная зона', en: 'Safe Zone' },
-    'card.status.scanning': { ru: 'Анализ визитки...', en: 'Analyzing card...' },
-    'card.vision.success': { ru: 'Данные извлечены!', en: 'Data Extracted!' },
-    'card.status.logo': { ru: 'Создание лого...', en: 'Creating logo...' },
-    'card.batch.processing': { ru: 'Обработка партии...', en: 'Processing batch...' },
-    'card.action.downloadBatchZip': { ru: 'Скачать партию (ZIP)', en: 'Download Batch (ZIP)' },
-    'card.action.downloadAll': { ru: 'Скачать всё', en: 'Download All' },
-
     // --- Upscaler ---
     'upscaler.title': { ru: 'AI Апскейлер', en: 'AI Upscaler' },
     'upscaler.subtitle': { ru: 'Локальное увеличение x4', en: 'Local x4 Enhancement' },
@@ -574,8 +521,6 @@ export const translations: Record<string, { ru: string; en: string }> = {
     'guide.menu.transposer': { ru: 'Style Transposer', en: 'Style Transposer' },
     'guide.menu.upscaler': { ru: 'Апскейлер', en: 'Upscaler' },
     'guide.menu.vector': { ru: 'Векторизация', en: 'Vectorization' },
-    'guide.menu.print': { ru: 'Центр Печати', en: 'Print Hub' },
-    'guide.menu.harmony': { ru: 'Бренд Кит', en: 'Brand Kit' },
 
     // Guide Content
     'guide.section.welcome.title': { ru: 'Добро пожаловать в StiGenAi', en: 'Welcome to StiGenAi' },
@@ -587,7 +532,7 @@ export const translations: Record<string, { ru: string; en: string }> = {
             <li><b>Стикерпаки:</b> Создание наборов стикеров с сохранением персонажа.</li>
             <li><b>Style Transposer:</b> Копирование стиля с любого изображения.</li>
             <li><b>Бизнес-инструменты:</b> Визитки, логотипы и айдентика.</li>
-            <li><b>Постобработка:</b> Векторизация (SVG), Апскейл (x4), Подготовка к печати.</li>
+            <li><b>Постобработка:</b> Векторизация (SVG), Апскейл (x4).</li>
         </ul>`,
         en: `StiGenAi is a professional AI-powered graphics suite. We combine top-tier neural networks (Gemini 3 Pro) with image processing tools to create stickers, business cards, vectors, and branding assets.<br/><br/>
         <b>Key Features:</b>
@@ -596,7 +541,7 @@ export const translations: Record<string, { ru: string; en: string }> = {
             <li><b>Sticker Packs:</b> Create sets with consistent characters.</li>
             <li><b>Style Transposer:</b> Copy style from any reference image.</li>
             <li><b>Business Tools:</b> Business cards, logos, and identity.</li>
-            <li><b>Post-processing:</b> Vectorization (SVG), Upscale (x4), Print Prep.</li>
+            <li><b>Post-processing:</b> Vectorization (SVG), Upscale (x4).</li>
         </ul>`
     },
 
@@ -722,42 +667,6 @@ export const translations: Record<string, { ru: string; en: string }> = {
             <li><b>AI Analysis:</b> Gemini Vision analyzes image structure before tracing to pick optimal parameters (smoothing, color count).</li>
         </ul>
         Result is a clean SVG file, ready for plotter cutting or editing in Adobe Illustrator.`
-    },
-
-    'guide.section.print.title': { ru: 'Центр Печати (Print Hub)', en: 'Print Hub' },
-    'guide.section.print.text': {
-        ru: `Интерактивная верстка листа А4 для домашней печати.<br/>
-        <ul>
-            <li>Перетаскивайте готовые стикеры и визитки на лист.</li>
-            <li>Дублируйте элементы для заполнения листа.</li>
-            <li>Генерируйте красивые фоны для листа с помощью AI.</li>
-            <li><b>Экспорт:</b> Скачивание в полном разрешении 300 DPI (PNG), готовое для отправки в типографию или на принтер.</li>
-        </ul>`,
-        en: `Interactive A4 sheet layout for home printing.<br/>
-        <ul>
-            <li>Drag & drop generated stickers and cards onto the sheet.</li>
-            <li>Duplicate elements to fill the page.</li>
-            <li>Generate artistic backgrounds for the sheet using AI.</li>
-            <li><b>Export:</b> Download in full 300 DPI resolution (PNG), ready for printing shop or home printer.</li>
-        </ul>`
-    },
-
-    'guide.section.harmony.title': { ru: 'Бренд Кит (Harmony)', en: 'Brand Kit (Harmony)' },
-    'guide.section.harmony.text': {
-        ru: `Генератор полного пакета айдентики.<br/>
-        На основе данных вашей компании (из визитки или введенных вручную) создает за один проход:<br/>
-        1. <b>Логотип:</b> Минималистичный векторный знак.
-        2. <b>Паттерн:</b> Бесшовный узор для фона или упаковки.
-        3. <b>Соцсети:</b> Аватар для профиля.
-        4. <b>Баннер:</b> Обложка для сайта или Facebook.
-        <br/>Всё генерируется в едином визуальном стиле и цветовой гамме.`,
-        en: `Full identity package generator.<br/>
-        Based on your company data (from card or manual input) creates in one pass:<br/>
-        1. <b>Logo:</b> Minimalist vector mark.
-        2. <b>Pattern:</b> Seamless pattern for backgrounds or packaging.
-        3. <b>Social:</b> Profile avatar.
-        4. <b>Banner:</b> Cover image for website or Facebook.
-        <br/>All generated in a consistent visual style and color palette.`
     },
 
     // --- BACKUP / FREE MANUAL WORKFLOW ---

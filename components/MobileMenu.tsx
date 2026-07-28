@@ -1,23 +1,22 @@
-
 import React from 'react';
 import { useTranslation } from '../contexts/LanguageContext';
 import { Preset, License } from '../types';
 import PresetManager from './PresetManager';
-import { GuideIcon } from './Icons';
 
 interface MobileMenuProps {
     isOpen: boolean;
     onClose: () => void;
     onOpenPatchNotes: () => void;
     onOpenInstructions: () => void;
-    onOpenScanner: () => void; // Kept in interface but unused in UI
+    onOpenWizard: () => void;
+    onOpenHistory: () => void;
     onOpenUpscaler: () => void;
     onOpenProcessor: () => void;
     onOpenDevForge: () => void;
-    onReset: () => void;
-    onLogout: () => void;
     onOpenLicenseGenerator?: () => void; 
     onOpenApiKey?: () => void;
+    onCopy: () => void;
+    onReset: () => void;
     presets: Preset[];
     onSaveOrUpdatePreset: (name: string) => void;
     onApplyPreset: (id: string) => void;
@@ -28,7 +27,7 @@ interface MobileMenuProps {
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({ 
-    isOpen, onClose, onOpenPatchNotes, onOpenInstructions, onOpenUpscaler, onOpenProcessor, onOpenDevForge, onReset, onLogout, onOpenLicenseGenerator, onOpenApiKey,
+    isOpen, onClose, onOpenPatchNotes, onOpenInstructions, onOpenWizard, onOpenHistory, onOpenDevForge, onOpenLicenseGenerator, onOpenApiKey, onCopy, onReset,
     presets, onSaveOrUpdatePreset, onApplyPreset, onDeletePreset, selectedPresetId, isDevMode, license
 }) => {
     const { t, language, setLanguage } = useTranslation();
@@ -40,117 +39,151 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-white z-[60] flex flex-col sm:hidden animate-fade-in">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50">
-                <h2 className="text-xl font-bold text-slate-800">{t('menu.title')}</h2>
-                <button onClick={onClose} className="p-2 text-slate-500 hover:text-slate-800 transition">
-                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            {/* Content */}
-            <div className="flex-grow overflow-y-auto p-4 space-y-6">
-                
-                {/* Presets Section */}
-                <section>
-                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">{t('presets.title')}</h3>
-                     <PresetManager 
-                        presets={presets}
-                        onSaveOrUpdate={onSaveOrUpdatePreset}
-                        onApply={(id) => { onApplyPreset(id); onClose(); }}
-                        onDelete={onDeletePreset}
-                        selectedPresetId={selectedPresetId}
-                    />
-                </section>
-                
-                <hr className="border-slate-100" />
-
-                 {/* Tools Section */}
-                <section className="space-y-2">
-                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">{t('menu.tools')}</h3>
-                    
-                    {/* Reset doesn't change modal state, so we must manually close menu */}
-                    <button onClick={() => { onReset(); onClose(); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-slate-50 text-slate-700 font-semibold hover:bg-slate-100 transition">
-                         <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 20v-5h-5M4 4l16 16" />
-                        </svg>
-                        {t('preview.reset')}
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-3 sm:p-4 animate-fade-in">
+            <div className="bg-white w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[92vh] transition-all">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 bg-slate-50/80">
+                    <div className="flex items-center gap-2.5">
+                        <span className="text-xl">⚙️</span>
+                        <h2 className="text-lg sm:text-xl font-bold text-slate-900">{t('menu.title')}</h2>
+                    </div>
+                    <button 
+                        onClick={onClose} 
+                        className="w-9 h-9 rounded-full bg-slate-200/60 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold transition active:scale-95"
+                    >
+                        ✕
                     </button>
+                </div>
 
-                    {license.features.allowUpscale && (
-                        <button onClick={onOpenUpscaler} className="w-full flex items-center gap-3 p-3 rounded-xl bg-emerald-50 text-emerald-700 font-semibold hover:bg-emerald-100 transition">
-                            <span className="text-lg">🚀</span>
-                            {t('upscaler.title')}
-                        </button>
-                    )}
+                {/* Body Content */}
+                <div className="flex-grow overflow-y-auto p-4 sm:p-6 space-y-6">
+                    
+                    {/* Quick Settings & Tools Grid */}
+                    <section className="space-y-3">
+                        <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">{t('menu.tools')}</h3>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            {/* API KEY */}
+                            {onOpenApiKey && (
+                                <button 
+                                    onClick={() => { onOpenApiKey(); onClose(); }} 
+                                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold border border-amber-200/80 transition text-left text-xs sm:text-sm"
+                                >
+                                    <span className="text-xl p-2 bg-amber-100/80 rounded-xl">🔑</span>
+                                    <span>Gemini API Key</span>
+                                </button>
+                            )}
 
-                    {license.features.allowVector && (
-                        <button onClick={onOpenProcessor} className="w-full flex items-center gap-3 p-3 rounded-xl bg-cyan-50 text-cyan-700 font-semibold hover:bg-cyan-100 transition">
-                            <span className="text-lg">✨</span>
-                            {t('processor.title')}
-                        </button>
-                    )}
-
-                    {/* ADMIN TOOLS - Highlighted */}
-                    {isDevMode && (
-                        <div className="mt-4 pt-4 border-t border-dashed border-slate-200">
-                             <h3 className="text-xs font-bold text-yellow-600 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                <span className="text-base">🍌</span> ADMIN ZONE
-                             </h3>
-                            
-                            <button onClick={onOpenDevForge} className="w-full flex items-center gap-3 p-3 rounded-xl bg-amber-50 text-amber-700 font-semibold hover:bg-amber-100 transition mb-2">
-                                <span className="text-lg">⚒️</span>
-                                {t('header.forge')}
+                            {/* COPY PROMPT JSON */}
+                            <button 
+                                onClick={() => { onCopy(); onClose(); }} 
+                                className="flex items-center gap-3 p-3.5 rounded-2xl bg-indigo-50 hover:bg-indigo-100 text-indigo-900 font-bold border border-indigo-200/80 transition text-left text-xs sm:text-sm"
+                            >
+                                <span className="text-xl p-2 bg-indigo-100/80 rounded-xl">🧠</span>
+                                <span>Copy Prompt JSON</span>
                             </button>
 
+                            {/* WIZARD */}
+                            {license.features.allowStickers && (
+                                <button 
+                                    onClick={() => { onOpenWizard(); onClose(); }} 
+                                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold border border-purple-200/80 transition text-left text-xs sm:text-sm"
+                                >
+                                    <span className="text-xl p-2 bg-purple-100/80 rounded-xl">🧙‍♂️</span>
+                                    <span>{t('dashboard.wizard')}</span>
+                                </button>
+                            )}
+
+                            {/* HISTORY */}
+                            {license.features.allowPro && (
+                                <button 
+                                    onClick={() => { onOpenHistory(); onClose(); }} 
+                                    className="flex items-center gap-3 p-3.5 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-900 font-bold border border-sky-200/80 transition text-left text-xs sm:text-sm"
+                                >
+                                    <span className="text-xl p-2 bg-sky-100/80 rounded-xl">🕰️</span>
+                                    <span>{t('dashboard.history')}</span>
+                                </button>
+                            )}
+
+                            {/* LANGUAGE TOGGLE */}
                             <button 
-                                onClick={() => onOpenLicenseGenerator && onOpenLicenseGenerator()} 
-                                className="w-full flex items-center gap-3 p-3 rounded-xl bg-yellow-100 text-yellow-800 font-bold hover:bg-yellow-200 transition shadow-sm border border-yellow-300 mb-2"
+                                onClick={toggleLanguage} 
+                                className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200/80 text-slate-800 font-bold border border-slate-200/80 transition text-left text-xs sm:text-sm"
                             >
-                                <span className="text-lg">🔑</span>
-                                ГЕНЕРАТОР КЛЮЧЕЙ
+                                <span className="text-sm font-black p-2 bg-white rounded-xl border border-slate-200 text-indigo-600">
+                                    {language === 'ru' ? 'EN' : 'RU'}
+                                </span>
+                                <span>{language === 'ru' ? 'English Language' : 'Русский язык'}</span>
+                            </button>
+
+                            {/* INSTRUCTIONS */}
+                            <button 
+                                onClick={() => { onOpenInstructions(); onClose(); }} 
+                                className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-800 font-bold border border-slate-200/80 transition text-left text-xs sm:text-sm"
+                            >
+                                <span className="text-xl p-2 bg-slate-200/60 rounded-xl">📖</span>
+                                <span>{t('header.instructions')}</span>
+                            </button>
+
+                            {/* PATCH NOTES */}
+                            <button 
+                                onClick={() => { onOpenPatchNotes(); onClose(); }} 
+                                className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-800 font-bold border border-slate-200/80 transition text-left text-xs sm:text-sm"
+                            >
+                                <span className="text-xl p-2 bg-slate-200/60 rounded-xl">🎉</span>
+                                <span>{t('header.whatsNew')}</span>
+                            </button>
+
+                            {/* RESET SETTINGS */}
+                            <button 
+                                onClick={() => { onReset(); onClose(); }} 
+                                className="flex items-center gap-3 p-3.5 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold border border-rose-200/80 transition text-left text-xs sm:text-sm"
+                            >
+                                <span className="text-xl p-2 bg-rose-100/80 rounded-xl">🔄</span>
+                                <span>{t('preview.reset')}</span>
                             </button>
                         </div>
+                    </section>
+
+                    {/* Presets Section */}
+                    <section className="pt-2">
+                        <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3">{t('presets.title')}</h3>
+                        <PresetManager 
+                            presets={presets}
+                            onSaveOrUpdate={onSaveOrUpdatePreset}
+                            onApply={(id) => { onApplyPreset(id); onClose(); }}
+                            onDelete={onDeletePreset}
+                            selectedPresetId={selectedPresetId}
+                        />
+                    </section>
+
+                    {/* Developer / Admin Zone */}
+                    {isDevMode && (
+                        <section className="pt-3 border-t border-dashed border-slate-200">
+                            <h3 className="text-xs font-black text-amber-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <span>🍌</span> ADMIN ZONE
+                            </h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                                <button 
+                                    onClick={() => { onOpenDevForge(); onClose(); }} 
+                                    className="flex items-center gap-3 p-3 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold border border-amber-200 transition text-xs"
+                                >
+                                    <span className="text-lg">⚒️</span>
+                                    <span>{t('header.forge')}</span>
+                                </button>
+                                {onOpenLicenseGenerator && (
+                                    <button 
+                                        onClick={() => { onOpenLicenseGenerator(); onClose(); }} 
+                                        className="flex items-center gap-3 p-3 rounded-2xl bg-yellow-100 hover:bg-yellow-200 text-yellow-900 font-bold border border-yellow-300 transition text-xs"
+                                    >
+                                        <span className="text-lg">🔑</span>
+                                        <span>ГЕНЕРАТОР КЛЮЧЕЙ</span>
+                                    </button>
+                                )}
+                            </div>
+                        </section>
                     )}
-                </section>
-
-                <hr className="border-slate-100" />
-
-                {/* App Info Section */}
-                <section className="space-y-2">
-                    <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">{t('menu.app')}</h3>
-                    
-                    {onOpenApiKey && (
-                        <button onClick={() => { onOpenApiKey(); onClose(); }} className="w-full flex items-center gap-3 p-3 rounded-xl bg-amber-50 text-amber-900 font-bold hover:bg-amber-100 transition border border-amber-200">
-                            <span className="text-lg">🔑</span>
-                            <span>Настройка API ключа Gemini</span>
-                        </button>
-                    )}
-
-                    <button onClick={onOpenInstructions} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition">
-                        <GuideIcon size={20} />
-                        {t('header.instructions')}
-                    </button>
-                    <button onClick={onOpenPatchNotes} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition">
-                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        {t('header.whatsNew')}
-                    </button>
-                    <button onClick={toggleLanguage} className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-700 transition">
-                        <span className="font-bold border border-slate-300 rounded px-1 text-xs">{language === 'ru' ? 'EN' : 'RU'}</span>
-                        {language === 'ru' ? 'English' : 'Русский'}
-                    </button>
-
-                    <button 
-                        onClick={() => { onLogout(); onClose(); }} 
-                        className="w-full flex items-center gap-3 p-3 rounded-xl bg-red-50 text-red-800 font-bold hover:bg-red-100 transition shadow-sm border border-red-300 mt-4"
-                    >
-                        <span className="text-lg">🚪</span>
-                        {t('action.logout')}
-                    </button>
-                </section>
+                </div>
             </div>
         </div>
     );

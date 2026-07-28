@@ -13,18 +13,25 @@ interface FormatSettingsProps {
 
 const FormatSettings: React.FC<FormatSettingsProps> = ({ settings, onSettingsChange, onStickerModeChange }) => {
     const { t } = useTranslation();
+    const isLaserEngraving = settings.style === 'LASER_ENGRAVING';
     return (
         <>
             <SettingGroup title={t('format.stickerMode')}>
                 <OptionSelector
                     name="stickerMode"
                     value={settings.stickerMode}
-                    onChange={(val) => onStickerModeChange(val as StickerMode)}
+                    onChange={(val) => !isLaserEngraving && onStickerModeChange(val as StickerMode)}
                     options={[
                         { value: 'ISOLATION', label: t('format.stickerMode.isolation') },
                         { value: 'CONTAINER', label: t('format.stickerMode.container') },
                     ]}
+                    disabled={isLaserEngraving}
                 />
+                {isLaserEngraving && (
+                    <div className="mt-3 p-3 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-xl flex flex-col gap-1 shadow-sm">
+                        <span className="font-bold flex items-center gap-1">⚠️ {t('style.laser_engraving.isolation_lock')}</span>
+                    </div>
+                )}
                 {/* Container Shape is only for IMAGE + CONTAINER */}
                 {settings.stickerType === 'IMAGE' && settings.stickerMode === 'CONTAINER' && (
                     <div className="mt-4">

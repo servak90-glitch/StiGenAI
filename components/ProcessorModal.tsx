@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from '../contexts/LanguageContext';
-import { traceOutline, TRACER_PRESETS, TracerConfig, TracerPresetKey } from '../utils/svgTracer';
+import { traceOutline, TRACER_PRESETS, TracerConfig } from '../utils/svgTracer';
 import { PreprocessConfig } from '../utils/smartTracer';
 import { License } from '../types';
 import SunLoader from './SunLoader';
@@ -14,7 +14,6 @@ interface ProcessorModalProps {
 }
 
 type ViewMode = 'SVG' | 'SPLIT' | 'ORIGINAL' | 'OVERLAY';
-type PresetType = 'COLOR_BALANCED' | 'HIGH_DETAIL' | 'SMOOTH_LOGO' | 'LINE_ART' | 'CUSTOM';
 type CanvasBg = 'GRID' | 'WHITE' | 'DARK';
 
 const triggerDownload = (url: string, filename: string, shouldRevoke: boolean = false) => {
@@ -45,13 +44,12 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
     const [splitPos, setSplitPos] = useState<number>(50); // percentage for split view
 
     // Vector Trace Parameters
-    const [preset, setPreset] = useState<PresetType>('COLOR_BALANCED');
-    const [numColors, setNumColors] = useState<number>(16);
-    const [smoothness, setSmoothness] = useState<number>(1.0); // ltres & qtres
-    const [despeckle, setDespeckle] = useState<number>(4); // pathomit
-    const [contrast, setContrast] = useState<number>(1.0);
-    const [blur, setBlur] = useState<number>(0);
-    const [bwThreshold, setBwThreshold] = useState<number>(-1); // -1 means color, 0-255 means B&W
+    const [mode, setMode] = useState<'OUTLINE' | 'COLOR'>('OUTLINE');
+    const [smoothness, setSmoothness] = useState<number>(0.6); // ltres & qtres
+    const [despeckle, setDespeckle] = useState<number>(3); // pathomit
+    const [contrast, setContrast] = useState<number>(1.3);
+    const [blur] = useState<number>(0);
+    const [bwThreshold, setBwThreshold] = useState<number>(128); // 128 = B&W contour by default (-2 = Otsu auto)
     const [optimizeSvg, setOptimizeSvg] = useState<boolean>(true);
 
     // SVG Metrics
@@ -66,47 +64,6 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
         }
     }, [initialImage, isOpen]);
 
-    // Apply Preset defaults
-    const applyPresetValues = (p: PresetType) => {
-        setPreset(p);
-        switch (p) {
-            case 'COLOR_BALANCED':
-                setNumColors(16);
-                setSmoothness(1.0);
-                setDespeckle(4);
-                setContrast(1.0);
-                setBlur(0);
-                setBwThreshold(-1);
-                break;
-            case 'HIGH_DETAIL':
-                setNumColors(32);
-                setSmoothness(0.2);
-                setDespeckle(1);
-                setContrast(1.1);
-                setBlur(0);
-                setBwThreshold(-1);
-                break;
-            case 'SMOOTH_LOGO':
-                setNumColors(8);
-                setSmoothness(2.0);
-                setDespeckle(12);
-                setContrast(1.2);
-                setBlur(0.5);
-                setBwThreshold(-1);
-                break;
-            case 'LINE_ART':
-                setNumColors(2);
-                setSmoothness(0.5);
-                setDespeckle(2);
-                setContrast(1.5);
-                setBlur(0);
-                setBwThreshold(128);
-                break;
-            case 'CUSTOM':
-                break;
-        }
-    };
-
     // Perform Tracing Function
     const performTracing = useCallback(async () => {
         if (!selectedImage) return;
@@ -117,15 +74,10 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
         const startTime = performance.now();
 
         try {
-            // Build TracerConfig
-            let tracerPresetKey: TracerPresetKey = 'BALANCED';
-            if (preset === 'HIGH_DETAIL') tracerPresetKey = 'HIGH_DETAIL';
-            if (preset === 'SMOOTH_LOGO') tracerPresetKey = 'SMOOTHED';
-            if (preset === 'LINE_ART') tracerPresetKey = 'TECHNICAL';
-
+            const isOutline = mode === 'OUTLINE' || bwThreshold >= 0 || bwThreshold === -2;
             const traceConfig: TracerConfig = {
-                ...TRACER_PRESETS[tracerPresetKey],
-                numberofcolors: bwThreshold >= 0 ? 2 : numColors,
+                ...TRACER_PRESETS['BALANCED'],
+                numberofcolors: isOutline ? 2 : 16,
                 ltres: smoothness,
                 qtres: smoothness,
                 pathomit: despeckle,
@@ -136,7 +88,7 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
             const preprocessConfig: PreprocessConfig = {
                 blurRadius: blur,
                 contrast: contrast,
-                threshold: bwThreshold >= 0 ? bwThreshold : undefined
+                threshold: isOutline ? (bwThreshold < 0 && bwThreshold !== -2 ? 128 : bwThreshold) : (bwThreshold >= 0 || bwThreshold === -2 ? bwThreshold : undefined)
             };
 
             const resultSvg = await traceOutline(selectedImage, traceConfig, preprocessConfig);
@@ -166,7 +118,7 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
             setIsTracing(false);
             setStatusMessage('');
         }
-    }, [selectedImage, preset, numColors, smoothness, despeckle, contrast, blur, bwThreshold, optimizeSvg, t]);
+    }, [selectedImage, mode, smoothness, despeckle, contrast, blur, bwThreshold, optimizeSvg, t]);
 
     // Auto trace on image upload or setting changes
     useEffect(() => {
@@ -176,7 +128,7 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
             setSvgOutput(null);
             setSvgMetrics(null);
         }
-    }, [selectedImage, isOpen, preset, numColors, smoothness, despeckle, contrast, blur, bwThreshold, optimizeSvg]);
+    }, [selectedImage, isOpen, mode, smoothness, despeckle, contrast, blur, bwThreshold, optimizeSvg]);
 
     if (!isOpen) return null;
 
@@ -482,31 +434,44 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
                         
                         <div className="space-y-6">
                             
-                            {/* Preset Selection Grid */}
+                            {/* Mode Selection */}
                             <div>
                                 <label className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 block mb-2">
-                                    Пресеты векторизации
+                                    Режим векторизации
                                 </label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {[
-                                        { key: 'COLOR_BALANCED', label: '🎨 Цветной', desc: 'Сбалансированный цвет' },
-                                        { key: 'HIGH_DETAIL', label: '💎 Высокая деталь', desc: '32 цвета, острые углы' },
-                                        { key: 'SMOOTH_LOGO', label: '🌊 Плавный лого', desc: 'Для стикеров и логотипов' },
-                                        { key: 'LINE_ART', label: '✒️ Ч/Б Контур', desc: '1-бит для лазерной резки' },
-                                    ].map(item => (
-                                        <button
-                                            key={item.key}
-                                            onClick={() => applyPresetValues(item.key as PresetType)}
-                                            className={`p-3 rounded-2xl border text-left transition-all ${
-                                                preset === item.key
-                                                    ? 'border-cyan-500 bg-cyan-50/50 dark:bg-cyan-950/30 text-slate-900 dark:text-white font-bold ring-2 ring-cyan-500/20'
-                                                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300'
-                                            }`}
-                                        >
-                                            <div className="text-xs font-bold">{item.label}</div>
-                                            <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium mt-0.5">{item.desc}</div>
-                                        </button>
-                                    ))}
+                                <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+                                    <button
+                                        onClick={() => {
+                                            setMode('OUTLINE');
+                                            setBwThreshold(128);
+                                            setContrast(1.3);
+                                            setSmoothness(0.6);
+                                            setDespeckle(3);
+                                        }}
+                                        className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                                            mode === 'OUTLINE'
+                                                ? 'bg-white dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 shadow-sm border border-slate-200/60 dark:border-slate-700/60'
+                                                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                        }`}
+                                    >
+                                        <span>✒️</span> Ч/Б Контур
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setMode('COLOR');
+                                            setBwThreshold(-1);
+                                            setContrast(1.0);
+                                            setSmoothness(1.0);
+                                            setDespeckle(4);
+                                        }}
+                                        className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                                            mode === 'COLOR'
+                                                ? 'bg-white dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 shadow-sm border border-slate-200/60 dark:border-slate-700/60'
+                                                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                        }`}
+                                    >
+                                        <span>🎨</span> Цветной вектор
+                                    </button>
                                 </div>
                             </div>
 
@@ -514,35 +479,44 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
                             <div className="space-y-4 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
                                 <div className="flex items-center justify-between">
                                     <label className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                        Точная настройка
+                                        Настройки трассировки
                                     </label>
-                                    {preset !== 'CUSTOM' && (
-                                        <button 
-                                            onClick={() => setPreset('CUSTOM')} 
-                                            className="text-[10px] font-bold text-cyan-600 hover:underline"
-                                        >
-                                            Кастомные настройки
-                                        </button>
-                                    )}
                                 </div>
 
-                                {/* Colors Slider */}
-                                <div>
-                                    <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                        <span>Количество цветов</span>
-                                        <span className="text-cyan-600 dark:text-cyan-400">{bwThreshold >= 0 ? '2 (Ч/Б)' : `${numColors} цв.`}</span>
+                                {/* Black & White Threshold Controls */}
+                                {(mode === 'OUTLINE' || bwThreshold >= 0 || bwThreshold === -2) && (
+                                    <div className="pb-3 border-b border-slate-200 dark:border-slate-800 space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                                                Порог чёрного и белого
+                                            </span>
+                                            <button
+                                                onClick={() => setBwThreshold(-2)}
+                                                className={`text-[10px] font-extrabold px-2 py-0.5 rounded-lg border transition ${
+                                                    bwThreshold === -2
+                                                        ? 'bg-cyan-500 text-white border-cyan-500'
+                                                        : 'bg-slate-100 dark:bg-slate-800 text-cyan-600 dark:text-cyan-400 border-slate-200 dark:border-slate-700 hover:border-cyan-500'
+                                                }`}
+                                            >
+                                                ⚡ Автопорог (Otsu)
+                                            </button>
+                                        </div>
+                                        <div className="flex justify-between text-[11px] font-bold text-slate-500">
+                                            <span>Binarization Threshold</span>
+                                            <span className="text-cyan-600 dark:text-cyan-400">
+                                                {bwThreshold === -2 ? 'Авто (Otsu)' : bwThreshold}
+                                            </span>
+                                        </div>
+                                        <input 
+                                            type="range"
+                                            min="0"
+                                            max="255"
+                                            value={bwThreshold === -2 ? 128 : bwThreshold}
+                                            onChange={e => setBwThreshold(Number(e.target.value))}
+                                            className="w-full accent-cyan-500 cursor-pointer"
+                                        />
                                     </div>
-                                    <input 
-                                        type="range"
-                                        min="2"
-                                        max="64"
-                                        step="2"
-                                        disabled={bwThreshold >= 0}
-                                        value={numColors}
-                                        onChange={e => { setNumColors(Number(e.target.value)); setPreset('CUSTOM'); }}
-                                        className="w-full accent-cyan-500 cursor-pointer disabled:opacity-40"
-                                    />
-                                </div>
+                                )}
 
                                 {/* Smoothness Slider */}
                                 <div>
@@ -556,7 +530,7 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
                                         max="4.0"
                                         step="0.1"
                                         value={smoothness}
-                                        onChange={e => { setSmoothness(Number(e.target.value)); setPreset('CUSTOM'); }}
+                                        onChange={e => setSmoothness(Number(e.target.value))}
                                         className="w-full accent-cyan-500 cursor-pointer"
                                     />
                                 </div>
@@ -573,7 +547,7 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
                                         max="32"
                                         step="1"
                                         value={despeckle}
-                                        onChange={e => { setDespeckle(Number(e.target.value)); setPreset('CUSTOM'); }}
+                                        onChange={e => setDespeckle(Number(e.target.value))}
                                         className="w-full accent-cyan-500 cursor-pointer"
                                     />
                                 </div>
@@ -581,7 +555,7 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
                                 {/* Contrast Adjustment */}
                                 <div>
                                     <div className="flex justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                                        <span>Контраст перед векторизацией</span>
+                                        <span>Контраст линий</span>
                                         <span className="text-cyan-600 dark:text-cyan-400">{contrast.toFixed(1)}x</span>
                                     </div>
                                     <input 
@@ -590,43 +564,9 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
                                         max="2.5"
                                         step="0.1"
                                         value={contrast}
-                                        onChange={e => { setContrast(Number(e.target.value)); setPreset('CUSTOM'); }}
+                                        onChange={e => setContrast(Number(e.target.value))}
                                         className="w-full accent-cyan-500 cursor-pointer"
                                     />
-                                </div>
-
-                                {/* Black & White Threshold Toggle/Slider */}
-                                <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                                            Режим Черно-Белого Контура (1-бит)
-                                        </span>
-                                        <input 
-                                            type="checkbox"
-                                            checked={bwThreshold >= 0}
-                                            onChange={e => {
-                                                setBwThreshold(e.target.checked ? 128 : -1);
-                                                setPreset('CUSTOM');
-                                            }}
-                                            className="w-4 h-4 accent-cyan-500 cursor-pointer"
-                                        />
-                                    </div>
-                                    {bwThreshold >= 0 && (
-                                        <div>
-                                            <div className="flex justify-between text-[11px] font-bold text-slate-500 mb-1">
-                                                <span>Порог яркости (Binarization)</span>
-                                                <span className="text-cyan-600">{bwThreshold}</span>
-                                            </div>
-                                            <input 
-                                                type="range"
-                                                min="0"
-                                                max="255"
-                                                value={bwThreshold}
-                                                onChange={e => { setBwThreshold(Number(e.target.value)); setPreset('CUSTOM'); }}
-                                                className="w-full accent-cyan-500 cursor-pointer"
-                                            />
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* SVGO Cleanup Toggle */}
@@ -636,7 +576,7 @@ const ProcessorModal: React.FC<ProcessorModalProps> = ({ isOpen, onClose, licens
                                             SVGO Оптимизация путей
                                         </span>
                                         <span className="text-[10px] text-slate-400">
-                                            Объединение дублирующихся стилей и сокращение точного кода
+                                            Объединение дублирующихся стилей и сокращение кода
                                         </span>
                                     </div>
                                     <input 

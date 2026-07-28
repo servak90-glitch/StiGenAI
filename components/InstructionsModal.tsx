@@ -7,9 +7,6 @@ import {
     BrainIcon, 
     VectorIcon, 
     UpscaleIcon,
-    CardsIcon,
-    HarmonyIcon,
-    PrintIcon,
     GuideIcon
 } from './Icons';
 
@@ -28,12 +25,9 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose }
         { id: 'welcome', icon: <span className="text-xl">👋</span>, label: t('guide.menu.welcome') },
         { id: 'generator', icon: <BananaIcon size={20} />, label: t('guide.menu.generator') },
         { id: 'pack', icon: <PackIcon size={20} />, label: t('guide.menu.pack') },
-        { id: 'cards', icon: <CardsIcon size={20} />, label: t('guide.menu.cards') },
         { id: 'transposer', icon: <BrainIcon size={20} />, label: t('guide.menu.transposer') },
         { id: 'upscaler', icon: <UpscaleIcon size={20} />, label: t('guide.menu.upscaler') },
         { id: 'vector', icon: <VectorIcon size={20} />, label: t('guide.menu.vector') },
-        { id: 'print', icon: <PrintIcon size={20} />, label: t('guide.menu.print') },
-        { id: 'harmony', icon: <HarmonyIcon size={20} />, label: t('guide.menu.harmony') },
     ];
 
     const getActiveContent = (id: string) => {
@@ -41,12 +35,9 @@ const InstructionsModal: React.FC<InstructionsModalProps> = ({ isOpen, onClose }
             'welcome': { title: t('guide.section.welcome.title'), text: t('guide.section.welcome.text'), color: 'from-indigo-500 to-purple-600' },
             'generator': { title: t('guide.section.generator.title'), text: t('guide.section.generator.text'), color: 'from-yellow-400 to-orange-500' },
             'pack': { title: t('guide.section.pack.title'), text: t('guide.section.pack.text'), color: 'from-sky-400 to-blue-500' },
-            'cards': { title: t('guide.section.cards.title'), text: t('guide.section.cards.text'), color: 'from-blue-500 to-indigo-600' },
             'transposer': { title: t('guide.section.transposer.title'), text: t('guide.section.transposer.text'), color: 'from-purple-500 to-pink-500' },
             'upscaler': { title: t('guide.section.upscale.title'), text: t('guide.section.upscale.text'), color: 'from-emerald-400 to-teal-600' },
             'vector': { title: t('guide.section.vector.title'), text: t('guide.section.vector.text'), color: 'from-teal-400 to-cyan-600' },
-            'print': { title: t('guide.section.print.title'), text: t('guide.section.print.text'), color: 'from-stone-400 to-stone-600' },
-            'harmony': { title: t('guide.section.harmony.title'), text: t('guide.section.harmony.text'), color: 'from-fuchsia-500 to-rose-500' },
         };
         return keyMap[id];
     };

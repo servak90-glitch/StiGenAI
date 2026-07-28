@@ -25,7 +25,6 @@ interface ImageGenerationModalNewProps {
     onSettingsChange: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
     license: License | null;
     onUsageUpdate: (usage: number) => void;
-    onOpenPrint: (images: string[]) => void;
     userStyles?: UserStyle[];
     onDeleteUserStyle?: (id: string) => void;
 }

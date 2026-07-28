@@ -9,12 +9,12 @@ interface AdminLicenseGeneratorProps {
 }
 
 const PRESETS = {
-    'BASIC': { days: 30, gens: 200, stickers: true, pro: false, vector: false, batch: false, cards: false, print: false, harmony: false, scanner: false, transposer: false, pack: false, label: 'Базовый (Стикеры)' },
-    'STANDARD': { days: 30, gens: 500, stickers: true, pro: false, vector: true, batch: false, cards: false, print: true, harmony: false, scanner: false, transposer: false, pack: true, label: 'Стандарт (+Pack)' },
-    'PRO_CREATOR': { days: 30, gens: 1000, stickers: true, pro: true, vector: true, batch: true, cards: true, print: true, harmony: true, scanner: true, transposer: true, pack: true, label: 'Pro (Полный)' },
-    'TRIAL': { days: 1, gens: 10, stickers: true, pro: false, vector: true, batch: false, cards: false, print: false, harmony: false, scanner: false, transposer: false, pack: false, label: 'Тест (1 день)' },
-    'UPSCALE_ONLY': { days: 30, gens: 100, stickers: false, pro: false, vector: false, batch: false, cards: false, print: false, harmony: false, scanner: false, transposer: false, pack: false, upscaleOnly: true, label: 'Только Апскейл' },
-    'VIP_YEAR': { days: 365, gens: 10000, stickers: true, pro: true, vector: true, batch: true, cards: true, print: true, harmony: true, scanner: true, transposer: true, pack: true, label: 'VIP (Год)' }
+    'BASIC': { days: 30, gens: 200, stickers: true, pro: false, vector: false, batch: false, scanner: false, transposer: false, pack: false, label: 'Базовый (Стикеры)' },
+    'STANDARD': { days: 30, gens: 500, stickers: true, pro: false, vector: true, batch: false, scanner: false, transposer: false, pack: true, label: 'Стандарт (+Pack)' },
+    'PRO_CREATOR': { days: 30, gens: 1000, stickers: true, pro: true, vector: true, batch: true, scanner: true, transposer: true, pack: true, label: 'Pro (Полный)' },
+    'TRIAL': { days: 1, gens: 10, stickers: true, pro: false, vector: true, batch: false, scanner: false, transposer: false, pack: false, label: 'Тест (1 день)' },
+    'UPSCALE_ONLY': { days: 30, gens: 100, stickers: false, pro: false, vector: false, batch: false, scanner: false, transposer: false, pack: false, upscaleOnly: true, label: 'Только Апскейл' },
+    'VIP_YEAR': { days: 365, gens: 10000, stickers: true, pro: true, vector: true, batch: true, scanner: true, transposer: true, pack: true, label: 'VIP (Год)' }
 };
 
 const AdminLicenseGenerator: React.FC<AdminLicenseGeneratorProps> = ({ onClose, isOpen = true }) => {
@@ -32,9 +32,6 @@ const AdminLicenseGenerator: React.FC<AdminLicenseGeneratorProps> = ({ onClose, 
         allowBatch: true,
         allowVector: true,
         allowUpscale: true,
-        allowCards: true,
-        allowPrint: true,
-        allowHarmony: true,
         allowScanner: true,
         allowTransposer: false,
         allowPack: true
@@ -72,7 +69,7 @@ const AdminLicenseGenerator: React.FC<AdminLicenseGeneratorProps> = ({ onClose, 
         if (p.upscaleOnly) {
              setFeatures({
                 allowStickers: false, allowPro: false, allowBatch: false, allowVector: false,
-                allowUpscale: true, allowCards: false, allowPrint: false, allowHarmony: false, allowScanner: false, allowTransposer: false, allowPack: false
+                allowUpscale: true, allowScanner: false, allowTransposer: false, allowPack: false
             });
         } else {
             setFeatures({
@@ -81,9 +78,6 @@ const AdminLicenseGenerator: React.FC<AdminLicenseGeneratorProps> = ({ onClose, 
                 allowBatch: p.batch,
                 allowVector: p.vector,
                 allowUpscale: true,
-                allowCards: p.cards,
-                allowPrint: p.print,
-                allowHarmony: p.harmony,
                 allowScanner: p.scanner,
                 allowTransposer: p.transposer,
                 allowPack: p.pack
@@ -233,18 +227,7 @@ const AdminLicenseGenerator: React.FC<AdminLicenseGeneratorProps> = ({ onClose, 
                                 <input type="checkbox" className="w-5 h-5 accent-indigo-600" checked={features.allowUpscale} onChange={() => handleToggleFeature('allowUpscale')} />
                                 <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors">🚀 4x Апскейл</span>
                             </label>
-                            <label className="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" className="w-5 h-5 accent-indigo-600" checked={features.allowCards} onChange={() => handleToggleFeature('allowCards')} />
-                                <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors">📇 Визитки (Business Cards)</span>
-                            </label>
-                            <label className="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" className="w-5 h-5 accent-indigo-600" checked={features.allowPrint} onChange={() => handleToggleFeature('allowPrint')} />
-                                <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors">🖨️ Центр печати (Print Hub)</span>
-                            </label>
-                            <label className="flex items-center gap-3 cursor-pointer group">
-                                <input type="checkbox" className="w-5 h-5 accent-indigo-600" checked={features.allowHarmony} onChange={() => handleToggleFeature('allowHarmony')} />
-                                <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors">🎨 Фирменный стиль (Brand Kit)</span>
-                            </label>
+
                             <label className="flex items-center gap-3 cursor-pointer group">
                                 <input type="checkbox" className="w-5 h-5 accent-indigo-600" checked={features.allowScanner} onChange={() => handleToggleFeature('allowScanner')} />
                                 <span className="text-sm font-bold text-slate-700 group-hover:text-indigo-600 transition-colors">👁️ Сканер стиля (Vision Scan)</span>

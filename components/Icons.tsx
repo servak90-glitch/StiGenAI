@@ -75,18 +75,6 @@ export const HistoryIcon: React.FC<IconProps> = (props) => (
     <FluentIcon {...props} path="Mantelpiece%20clock/3D/mantelpiece_clock_3d.png" alt="History" />
 );
 
-export const CardsIcon: React.FC<IconProps> = (props) => (
-    <FluentIcon {...props} path="Identification%20card/3D/identification_card_3d.png" alt="Cards" />
-);
-
-export const HarmonyIcon: React.FC<IconProps> = (props) => (
-    <FluentIcon {...props} path="Sparkles/3D/sparkles_3d.png" alt="Harmony" />
-);
-
-export const PrintIcon: React.FC<IconProps> = (props) => (
-    <FluentIcon {...props} path="Printer/3D/printer_3d.png" alt="Print" />
-);
-
 export const ForgeIcon: React.FC<IconProps> = (props) => (
     <FluentIcon {...props} path="Hammer/3D/hammer_3d.png" alt="Forge" />
 );

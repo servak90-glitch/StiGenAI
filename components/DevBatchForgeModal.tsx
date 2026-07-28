@@ -17,7 +17,6 @@ interface DevBatchForgeModalProps {
     onClose: () => void;
     license: License | null;
     onUsageUpdate: (usage: number) => void;
-    onOpenPrint: (images: string[]) => void;
 }
 
 const Toggle = ({ label, checked, onChange }: { label: string, checked: boolean, onChange: (v: boolean) => void }) => (
@@ -31,7 +30,7 @@ const Toggle = ({ label, checked, onChange }: { label: string, checked: boolean,
 );
 
 const DevBatchForgeModal: React.FC<DevBatchForgeModalProps> = ({ 
-    isOpen, onClose, license, onUsageUpdate, onOpenPrint 
+    isOpen, onClose, license, onUsageUpdate 
 }) => {
     const { t } = useTranslation();
     const [refs, setRefs] = useState<string[]>([]);
@@ -194,25 +193,7 @@ const DevBatchForgeModal: React.FC<DevBatchForgeModalProps> = ({
         }
     };
 
-    const handlePrint = async () => {
-        if (results.length === 0) return;
-        setIsProcessing(true);
-        setStatusMessage(t('print.status.generating'));
-        try {
-             // Process all images before sending to print
-             const processedImages = [];
-             for (const img of results) {
-                 processedImages.push(await processImage(img));
-             }
-             onOpenPrint(processedImages);
-        } catch (e) {
-            console.error(e);
-            setError("Print prep failed");
-        } finally {
-            setIsProcessing(false);
-            setStatusMessage('');
-        }
-    };
+
 
     return (
         <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-xl z-50 flex items-center justify-center p-4">
@@ -283,12 +264,7 @@ const DevBatchForgeModal: React.FC<DevBatchForgeModalProps> = ({
                                      {t('forge.downloadZip')}
                                 </button>
                              )}
-                             {results.length > 0 && (
-                                <button onClick={handlePrint} disabled={isProcessing} className="w-full py-4 border-2 border-slate-800 text-slate-800 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
-                                    {isProcessing ? <SunLoader className="w-4 h-4" /> : '🖨️'}
-                                    {t('forge.masterSheet')}
-                                </button>
-                             )}
+
                              {(isProcessing || isGenerating) && statusMessage && (
                                  <p className="text-[10px] text-center font-bold text-amber-600 animate-pulse uppercase tracking-wider">{statusMessage}</p>
                              )}

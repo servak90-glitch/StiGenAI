@@ -25,9 +25,6 @@ const mapFirestoreToAppLicense = (fsLic: FirestoreLicense, trustedTime: number):
             allowBatch: fsLic.features.includes('batch'),
             allowVector: fsLic.features.includes('vector'),
             allowUpscale: fsLic.features.includes('upscale'),
-            allowCards: fsLic.features.includes('cards'),
-            allowPrint: fsLic.features.includes('print'),
-            allowHarmony: fsLic.features.includes('harmony'),
             allowScanner: fsLic.features.includes('scanner'),
             allowTransposer: fsLic.features.includes('transposer'),
             allowPack: fsLic.features.includes('pack'),
@@ -116,9 +113,6 @@ export const updateExistingLicense = async (
     if (features.allowBatch) featureList.push('batch');
     if (features.allowVector) featureList.push('vector');
     if (features.allowUpscale) featureList.push('upscale');
-    if (features.allowCards) featureList.push('cards');
-    if (features.allowPrint) featureList.push('print');
-    if (features.allowHarmony) featureList.push('harmony');
     if (features.allowScanner) featureList.push('scanner');
     if (features.allowTransposer) featureList.push('transposer');
     if (features.allowPack) featureList.push('pack');
@@ -158,9 +152,6 @@ export const generateNewLicense = async (
     if (features.allowBatch) featureList.push('batch');
     if (features.allowVector) featureList.push('vector');
     if (features.allowUpscale) featureList.push('upscale');
-    if (features.allowCards) featureList.push('cards');
-    if (features.allowPrint) featureList.push('print');
-    if (features.allowHarmony) featureList.push('harmony');
     if (features.allowScanner) featureList.push('scanner');
     if (features.allowTransposer) featureList.push('transposer');
     if (features.allowPack) featureList.push('pack');

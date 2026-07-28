@@ -17,9 +17,16 @@ const StyleScannerModal: React.FC<StyleScannerModalProps> = ({ isOpen, onClose }
     const [isLoading, setIsLoading] = useState(false);
     const [resultJson, setResultJson] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
+    const [copiedPromptToast, setCopiedPromptToast] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     if (!isOpen) return null;
+
+    const handleCopyScannerPrompt = () => {
+        navigator.clipboard.writeText(STYLE_SCANNER_PROMPT);
+        setCopiedPromptToast(true);
+        setTimeout(() => setCopiedPromptToast(false), 2500);
+    };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         // Cast to File[] to ensure typescript knows these are Files (which extend Blob)
@@ -148,11 +155,22 @@ const StyleScannerModal: React.FC<StyleScannerModalProps> = ({ isOpen, onClose }
                         </h2>
                         <p className="text-indigo-100 text-xs sm:text-sm mt-0.5">{t('scanner.subtitle')}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <button
+                            type="button"
+                            onClick={handleCopyScannerPrompt}
+                            className="bg-white/10 hover:bg-white/20 text-white border border-white/30 text-xs px-3 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5"
+                            title={t('transposer.copyExtractionPromptTip')}
+                        >
+                            <span>📋</span>
+                            <span>{copiedPromptToast ? t('preview.copied') : t('transposer.action.copyExtractionPrompt')}</span>
+                        </button>
+                        <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Content */}
